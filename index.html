@@ -193,25 +193,32 @@ const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function loadFromSupabase() {
   try {
-    const { data, error } = await _sb.from('episodios').select('id,is_done,has_thumb').order('id');
+    const { data, error } = await _sb.from('episodios').select('ep_num,is_done,has_thumb').order('id');
     if (error) throw error;
-    data.forEach(ep => { state[ep.id] = { done: ep.is_done, thumb: ep.has_thumb }; });
+    // Apply Supabase states to EPISODES array
+    data.forEach(dbEp => {
+      const ep = EPISODES.find(e => e.ep === dbEp.ep_num);
+      if (ep) {
+        ep.done = dbEp.is_done;
+        if (dbEp.has_thumb) openThumbs.add(ep.ep);
+      }
+    });
   } catch(err) {
-    console.warn('Supabase load failed, using localStorage:', err.message);
-    load();
+    console.warn('Supabase load failed:', err.message);
+    // Continue without remote state - use hardcoded defaults
   }
 }
 
-async function _saveDone(id, val) {
+async function _saveDone(epNum, val) {
   try {
-    await _sb.from('episodios').update({is_done: val, updated_at: new Date().toISOString()}).eq('id', id);
-  } catch(err) { console.warn('Supabase update failed:', err.message); save(); }
+    await _sb.from('episodios').update({is_done: val, updated_at: new Date().toISOString()}).eq('ep_num', epNum);
+  } catch(err) { console.warn('Supabase update failed:', err.message); }
 }
 
-async function _saveThumb(id, val) {
+async function _saveThumb(epNum, val) {
   try {
-    await _sb.from('episodios').update({has_thumb: val, updated_at: new Date().toISOString()}).eq('id', id);
-  } catch(err) { console.warn('Supabase update failed:', err.message); save(); }
+    await _sb.from('episodios').update({has_thumb: val, updated_at: new Date().toISOString()}).eq('ep_num', epNum);
+  } catch(err) { console.warn('Supabase update failed:', err.message); }
 }
 // =========================================
 
@@ -665,15 +672,17 @@ function exportMD() {
 
 // === Supabase hooks para toggleDone y toggleThumb ===
 const _origToggleDone = toggleDone;
-toggleDone = async function(id, event) {
-  _origToggleDone(id, event);
-  if (state[id]) await _saveDone(id, state[id].done);
+toggleDone = async function(ep, event) {
+  _origToggleDone(ep, event);
+  const epObj = EPISODES.find(e => e.ep === ep);
+  if (epObj) await _saveDone(ep, epObj.done);
 };
 
 const _origToggleThumb = toggleThumb;
-toggleThumb = async function(id) {
-  _origToggleThumb(id);
-  if (state[id]) await _saveThumb(id, state[id].thumb);
+toggleThumb = async function(ep) {
+  _origToggleThumb(ep);
+  const isThumb = openThumbs.has(ep);
+  await _saveThumb(ep, isThumb);
 };
 
 
