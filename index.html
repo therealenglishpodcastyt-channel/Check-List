@@ -318,18 +318,17 @@ async function _loadUserProgress() {
     .select('ep_num, is_done, has_thumb')
     .eq('user_id', _currentUser.id);
   if (error) { console.error('Error cargando progreso:', error); renderAll(); return; }
+  EPISODES.forEach(ep => { ep.done = false; });
+  openThumbs.clear();
   if (data && data.length > 0) {
-    EPISODES.forEach(ep => { ep.done = false; });
-    openThumbs.clear();
     data.forEach(row => {
-      const ep = EPISODES.find(e => e.ep === row.ep_num);
+      const ep = EPISODES.find(e => e.ep === Number(row.ep_num));
       if (ep) ep.done = row.is_done;
-      if (row.has_thumb) openThumbs.add(row.ep_num);
+      if (row.has_thumb) openThumbs.add(Number(row.ep_num));
     });
   }
   renderAll();
 }
-
 async function _upsertProgress(epNum, isDone, isThumb) {
   if (!_currentUser) return;
   await _sb.from('user_progress').upsert(
@@ -355,6 +354,15 @@ toggleThumb = async function(ep) {
 };
 
 // ============================================================
+const CATEGORIES = [
+  { id: 'emergencia', name: 'Emergencia o Tensión', emoji: '⚠️', color: '#e74c3c' },
+  { id: 'cultura', name: 'Cultura Americana', emoji: '🇺🇸', color: '#3498db' },
+  { id: 'dinero', name: 'Dinero, Trabajo y Vida Real', emoji: '💵', color: '#2ecc71' },
+  { id: 'relaciones', name: 'Relaciones, Amistad y Social', emoji: '🤝', color: '#9b59b6' },
+  { id: 'viajes', name: 'Viajes y Aventuras', emoji: '✈️', color: '#f39c12' },
+  { id: 'opinion', name: 'Temas que Generan Opinión', emoji: '🗣️', color: '#1abc9c' },
+];
+
 const EPISODES = [
   {
     ep:1, cat:'emergencia',
