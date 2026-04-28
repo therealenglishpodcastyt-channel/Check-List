@@ -3,186 +3,305 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>THE REAL ENGLISH PODCAST — Production Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:#0e0e0e; --surface:#161616; --card:#1e1e1e; --border:#2a2a2a;
-    --accent:#C0392B; --accent2:#e74c3c; --yellow:#f5c518;
-    --text:#f0f0f0; --muted:#888;
-    --done:#1a2e1a; --done-b:#4caf50;
-    --pending:#1a1a2e; --pending-b:#5555cc;
-    --thumb-bg:#1a1215; --thumb-b:#3a2020;
+    --bg:#0a0a0f; --surface:#12121a; --card:#181824; --card2:#1e1e2e; --border:#2a2a40; --border2:#3a3a58;
+    --purple:#9b5de5; --purple-bright:#b76eff; --magenta:#c850c0; --pink:#f038a0;
+    --grad:linear-gradient(135deg,#9b5de5,#c850c0,#f038a0);
+    --grad2:linear-gradient(135deg,#7c3aed,#a855f7);
+    --yellow:#f5c518; --green:#00d4a0; --text:#f0f0f8; --muted:#6e6e96; --muted2:#9898b8;
+    --capcut:#ff6b35; --portada:#a78bfa; --miniatura:#fbbf24; --youtube:#f43f5e;
+    --done-bg:rgba(0,212,160,.08); --done-b:#00d4a0; --partial-b:#f5c518; --pending-b:#9b5de5;
   }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;
+    background-image:linear-gradient(rgba(155,93,229,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(155,93,229,.04) 1px,transparent 1px);
+    background-size:40px 40px;
+  }
 
+  /* HEADER */
   header{
-    background:var(--surface);border-bottom:3px solid var(--accent);
-    padding:18px 28px;position:sticky;top:0;z-index:100;
+    background:rgba(10,10,15,.94);border-bottom:2px solid transparent;
+    border-image:var(--grad) 1;padding:14px 28px;position:sticky;top:0;z-index:100;
     display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    backdrop-filter:blur(14px);box-shadow:0 4px 40px rgba(155,93,229,.18);
   }
-  .header-left h1{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;color:var(--accent);line-height:1;}
-  .header-left p{font-size:0.68rem;color:var(--muted);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase;}
+  .header-left{display:flex;align-items:center;gap:14px;}
+  .header-logo-img{
+    width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;
+    border:2px solid rgba(155,93,229,.5);
+    box-shadow:0 0 18px rgba(155,93,229,.45);
+    transition:box-shadow .2s;
+  }
+  .header-logo-img:hover{box-shadow:0 0 28px rgba(200,80,192,.7);}
+  .header-mic{
+    width:44px;height:44px;background:var(--grad);border-radius:12px;
+    display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;
+    box-shadow:0 0 20px rgba(155,93,229,.5);
+  }
+  .header-title h1{
+    font-family:'Black Han Sans',sans-serif;font-size:1.3rem;letter-spacing:2px;
+    background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;
+  }
+  .header-title p{font-size:0.61rem;color:var(--muted2);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
 
-  .stats{display:flex;gap:22px;align-items:center;flex-wrap:wrap;}
+  .stats{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
   .stat{text-align:center;}
-  .stat .n{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;}
-  .stat .l{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
-  .n.green{color:var(--done-b);}
-  .n.yellow{color:var(--yellow);}
-  .n.gray{color:var(--muted);}
-
-  .bar-wrap{width:180px;}
-  .bar-top{display:flex;justify-content:space-between;font-size:0.68rem;color:var(--muted);margin-bottom:4px;}
-  .bar{height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
-  .bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--done-b));border-radius:99px;transition:width .4s;}
-
+  .stat .n{
+    font-family:'Black Han Sans',sans-serif;font-size:1.9rem;line-height:1;
+    background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
+  .stat .n.gray{background:none;-webkit-text-fill-color:var(--muted2);}
+  .stat .l{font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:1px;}
+  .bar-wrap{width:155px;}
+  .bar-top{display:flex;justify-content:space-between;font-size:0.65rem;color:var(--muted2);margin-bottom:5px;}
+  .bar{height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--grad);border-radius:99px;transition:width .5s;box-shadow:0 0 10px rgba(155,93,229,.6);}
   .export-btn{
-    background:var(--accent);color:#fff;border:none;padding:10px 20px;
-    border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;
-    cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;white-space:nowrap;
+    background:var(--grad);color:#fff;border:none;padding:9px 18px;border-radius:8px;
+    font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:800;cursor:pointer;
+    display:flex;align-items:center;gap:6px;transition:all .2s;white-space:nowrap;
+    box-shadow:0 4px 16px rgba(155,93,229,.4);
   }
-  .export-btn:hover{background:var(--accent2);transform:translateY(-1px);}
+  .export-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(155,93,229,.6);}
+  .user-bar{display:flex;align-items:center;gap:10px;font-size:0.75rem;}
+  .user-bar span{color:var(--muted2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .btn-logout{
+    padding:6px 14px;background:transparent;border:1px solid var(--border2);color:var(--muted2);
+    border-radius:6px;cursor:pointer;font-size:0.73rem;font-family:'Nunito',sans-serif;font-weight:700;transition:.2s;
+  }
+  .btn-logout:hover{border-color:var(--magenta);color:var(--magenta);}
 
-  .main{max-width:980px;margin:0 auto;padding:28px 22px;}
+  /* MAIN */
+  .main{max-width:1040px;margin:0 auto;padding:28px 22px;}
 
-  .summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:32px;}
+  /* Hero band */
+  .hero-band{
+    background:var(--grad);border-radius:14px;padding:18px 26px;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    margin-bottom:28px;box-shadow:0 8px 40px rgba(155,93,229,.35);
+    position:relative;overflow:hidden;
+  }
+  .hero-band::before{content:'';position:absolute;top:-30px;right:-30px;width:140px;height:140px;background:rgba(255,255,255,.08);border-radius:50%;}
+  .hero-band::after{content:'';position:absolute;bottom:-50px;right:80px;width:100px;height:100px;background:rgba(255,255,255,.05);border-radius:50%;}
+  .hero-text h2{font-family:'Black Han Sans',sans-serif;font-size:1.2rem;letter-spacing:1px;color:#fff;}
+  .hero-text p{font-size:0.76rem;color:rgba(255,255,255,.75);margin-top:3px;}
+  .hero-tag{background:rgba(255,255,255,.18);color:#fff;padding:6px 16px;border-radius:99px;font-size:0.74rem;font-weight:800;letter-spacing:1px;backdrop-filter:blur(4px);}
+
+  /* Summary */
+  .summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:12px;margin-bottom:28px;}
   .summary-card{
-    background:var(--card);border:1px solid var(--border);border-radius:10px;
-    padding:16px 18px;display:flex;flex-direction:column;gap:8px;
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:16px 18px;display:flex;flex-direction:column;gap:9px;
+    transition:border-color .2s,transform .2s;position:relative;overflow:hidden;
   }
-  .summary-card .cat-header{display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.88rem;}
-  .summary-card .cat-bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:4px;}
-  .summary-card .cat-fill{height:100%;border-radius:99px;}
-  .summary-card .cat-count{font-size:0.72rem;color:var(--muted);margin-top:2px;}
+  .summary-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:0;transition:opacity .2s;}
+  .summary-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+  .summary-card:hover::before{opacity:1;}
+  .summary-card .cat-header{display:flex;align-items:center;gap:9px;font-weight:800;font-size:0.85rem;}
+  .summary-card .cat-bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:2px;}
+  .summary-card .cat-fill{height:100%;border-radius:99px;transition:width .4s;}
+  .summary-card .cat-count{font-size:0.69rem;color:var(--muted2);}
 
-  .section{margin-bottom:32px;}
+  /* Legend */
+  .legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;align-items:center;}
+  .legend-label{font-size:0.67rem;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .legend-item{display:flex;align-items:center;gap:5px;font-size:0.69rem;color:var(--muted2);font-weight:700;}
+  .legend-dot{width:9px;height:9px;border-radius:50%;}
+
+  /* Filters */
+  .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
+  .filter-label{font-size:0.69rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+  .filter-btn{
+    background:var(--card);border:1px solid var(--border);color:var(--muted2);
+    padding:7px 16px;border-radius:99px;font-size:0.76rem;font-weight:700;
+    font-family:'Nunito',sans-serif;cursor:pointer;transition:all .18s;
+  }
+  .filter-btn:hover{border-color:var(--purple);color:var(--purple-bright);}
+  .filter-btn.active{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(155,93,229,.4);}
+  .search-box{
+    background:var(--card);border:1px solid var(--border);color:var(--text);
+    padding:8px 16px;border-radius:10px;font-size:0.81rem;font-family:'Nunito',sans-serif;
+    width:225px;outline:none;transition:border .2s;
+  }
+  .search-box:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(155,93,229,.12);}
+  .search-box::placeholder{color:var(--muted);}
+
+  /* Section */
+  .section{margin-bottom:30px;}
   .section-title{
-    font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;
-    color:var(--accent);border-bottom:1px solid var(--border);
-    padding-bottom:8px;margin-bottom:14px;display:flex;align-items:center;gap:10px;
+    font-family:'Black Han Sans',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--purple-bright);
+    border-bottom:1px solid var(--border);padding-bottom:9px;margin-bottom:13px;
+    display:flex;align-items:center;gap:10px;
   }
   .section-title .badge{
-    font-family:'DM Sans',sans-serif;font-size:0.68rem;font-weight:600;
-    background:var(--done);color:var(--done-b);border:1px solid var(--done-b);
-    padding:2px 8px;border-radius:99px;letter-spacing:0.5px;margin-left:auto;
+    font-family:'Nunito',sans-serif;font-size:0.65rem;font-weight:800;
+    background:rgba(155,93,229,.15);color:var(--purple-bright);
+    border:1px solid rgba(155,93,229,.35);
+    padding:3px 10px;border-radius:99px;letter-spacing:.5px;margin-left:auto;
   }
 
   /* Episode card */
   .ep-card{
-    background:var(--card);border:1px solid var(--border);
-    border-radius:10px;margin-bottom:10px;overflow:hidden;
-    transition:border-color .18s;
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    margin-bottom:8px;overflow:hidden;transition:border-color .18s,box-shadow .18s;
+    border-left:3px solid var(--border);
   }
-  .ep-card:hover{border-color:var(--accent);}
-  .ep-card.done{border-left:3px solid var(--done-b);}
-  .ep-card.pending{border-left:3px solid var(--pending-b);}
+  .ep-card:hover{border-color:var(--border2);box-shadow:0 4px 24px rgba(0,0,0,.3);}
+  .ep-card.all-done{border-left-color:var(--done-b);background:linear-gradient(135deg,var(--card),rgba(0,212,160,.03));}
+  .ep-card.none-done{border-left-color:var(--pending-b);}
+  .ep-card.partial{border-left-color:var(--partial-b);}
 
-  .ep-main{
-    display:flex;align-items:center;gap:12px;
-    padding:11px 16px;cursor:pointer;
+  .ep-main{display:flex;align-items:center;gap:10px;padding:11px 14px;}
+  .ep-num{
+    font-family:'Black Han Sans',sans-serif;font-size:.93rem;min-width:46px;text-align:center;
+    background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   }
-  .ep-num{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;color:var(--muted);min-width:38px;text-align:center;}
-  .ep-status{font-size:1rem;min-width:20px;}
-  .ep-title{flex:1;font-size:0.87rem;font-weight:500;line-height:1.35;}
-  .ep-file{font-size:0.68rem;color:var(--muted);font-family:monospace;white-space:nowrap;}
+  .ep-progress{
+    font-size:0.67rem;font-weight:900;min-width:32px;text-align:center;
+    padding:3px 7px;border-radius:99px;border:1.5px solid var(--border);
+  }
+  .ep-progress.p0{color:var(--muted);border-color:var(--border);}
+  .ep-progress.p1,.ep-progress.p2,.ep-progress.p3{color:var(--partial-b);border-color:rgba(245,197,24,.4);background:rgba(245,197,24,.06);}
+  .ep-progress.p4{color:var(--done-b);border-color:rgba(0,212,160,.4);background:rgba(0,212,160,.08);}
 
-  .toggle-done{
-    background:none;border:1px solid var(--border);color:var(--muted);
-    padding:4px 10px;border-radius:6px;font-size:0.72rem;cursor:pointer;
-    transition:all .18s;white-space:nowrap;flex-shrink:0;
-  }
-  .toggle-done:hover{border-color:var(--done-b);color:var(--done-b);}
-  .ep-card.done .toggle-done{border-color:var(--done-b);color:var(--done-b);}
+  .ep-title{flex:1;font-size:0.85rem;font-weight:700;line-height:1.3;}
+  .ep-file{font-size:0.65rem;color:var(--muted);font-family:monospace;white-space:nowrap;}
 
-  .thumb-toggle{
-    background:none;border:none;color:var(--muted);
-    padding:4px 8px;border-radius:6px;font-size:0.72rem;cursor:pointer;
-    transition:all .18s;display:flex;align-items:center;gap:4px;flex-shrink:0;
+  .ep-checks{display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
+  .check-btn{
+    display:flex;align-items:center;gap:4px;background:var(--surface);
+    border:1.5px solid var(--border2);color:var(--muted2);
+    padding:4px 10px;border-radius:7px;font-size:0.68rem;font-weight:800;
+    font-family:'Nunito',sans-serif;cursor:pointer;transition:all .18s;white-space:nowrap;flex-shrink:0;
   }
-  .thumb-toggle:hover{color:var(--yellow);}
-  .thumb-toggle.open{color:var(--yellow);}
+  .check-btn:hover{border-color:var(--purple);color:var(--purple-bright);transform:translateY(-1px);}
+  .check-btn.active-capcut{background:rgba(255,107,53,.12);border-color:var(--capcut);color:var(--capcut);box-shadow:0 2px 8px rgba(255,107,53,.2);}
+  .check-btn.active-portada{background:rgba(167,139,250,.12);border-color:var(--portada);color:var(--portada);box-shadow:0 2px 8px rgba(167,139,250,.2);}
+  .check-btn.active-miniatura{background:rgba(251,191,36,.12);border-color:var(--miniatura);color:var(--miniatura);box-shadow:0 2px 8px rgba(251,191,36,.2);}
+  .check-btn.active-youtube{background:rgba(244,63,94,.12);border-color:var(--youtube);color:var(--youtube);box-shadow:0 2px 8px rgba(244,63,94,.2);}
 
-  .thumb-panel{
-    display:none;border-top:1px solid var(--border);
-    background:var(--thumb-bg);padding:14px 18px 16px 68px;
+  .panel-toggle{
+    background:none;border:1.5px solid var(--border2);color:var(--muted2);
+    padding:4px 10px;border-radius:7px;font-size:0.69rem;font-weight:800;
+    font-family:'Nunito',sans-serif;cursor:pointer;transition:all .18s;
+    display:flex;align-items:center;gap:4px;flex-shrink:0;white-space:nowrap;
   }
-  .thumb-panel.open{display:block;}
-  .thumb-label{
-    font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;
-    color:var(--accent);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;
-  }
-  .thumb-desc{
-    font-size:0.83rem;color:#ccc;line-height:1.65;
-    border-left:2px solid var(--accent);padding-left:12px;
-  }
+  .panel-toggle:hover{border-color:var(--purple);color:var(--purple-bright);}
+  .panel-toggle.open{border-color:var(--magenta);color:var(--magenta);}
 
-  .filter-bar{
-    display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;align-items:center;
+  .ep-panel{display:none;border-top:1px solid var(--border);background:rgba(18,18,26,.9);padding:16px 18px 18px;}
+  .ep-panel.open{display:block;}
+  .panel-row{display:flex;gap:18px;flex-wrap:wrap;}
+  .panel-col{flex:1;min-width:220px;}
+  .panel-label{
+    font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;font-weight:900;
+    margin-bottom:9px;display:flex;align-items:center;gap:6px;
+    background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   }
-  .filter-btn{
-    background:var(--card);border:1px solid var(--border);color:var(--muted);
-    padding:6px 14px;border-radius:99px;font-size:0.78rem;cursor:pointer;transition:all .18s;
+  .thumb-desc{font-size:0.81rem;color:#b0b0d0;line-height:1.68;border-left:2px solid var(--purple);padding-left:12px;}
+  .notes-area{
+    width:100%;background:var(--bg);border:1.5px solid var(--border2);color:var(--text);
+    border-radius:8px;padding:10px 13px;font-family:'Nunito',sans-serif;font-size:0.81rem;
+    resize:vertical;min-height:72px;outline:none;transition:border .18s;
   }
-  .filter-btn:hover,.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
-  .filter-label{font-size:0.72rem;color:var(--muted);margin-right:4px;}
-
-  .search-box{
-    background:var(--card);border:1px solid var(--border);color:var(--text);
-    padding:7px 14px;border-radius:8px;font-size:0.82rem;width:220px;
-    outline:none;transition:border .18s;
+  .notes-area:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(155,93,229,.1);}
+  .notes-area::placeholder{color:var(--muted);}
+  .notes-save{
+    margin-top:7px;padding:6px 16px;background:var(--grad2);color:#fff;border:none;
+    border-radius:7px;font-size:0.71rem;font-weight:800;font-family:'Nunito',sans-serif;
+    cursor:pointer;transition:.2s;box-shadow:0 3px 12px rgba(155,93,229,.3);
   }
-  .search-box:focus{border-color:var(--accent);}
-  .search-box::placeholder{color:var(--muted);}
+  .notes-save:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(155,93,229,.45);}
+  .notes-saved-msg{font-size:0.67rem;color:var(--done-b);margin-left:8px;font-weight:800;opacity:0;transition:opacity .3s;}
 
-  footer{text-align:center;padding:30px;color:var(--muted);font-size:0.72rem;border-top:1px solid var(--border);margin-top:20px;}
-
-  @media(max-width:600px){
-    .ep-file{display:none;}
-    .stats{gap:14px;}
-    header{padding:14px 16px;}
-    .main{padding:18px 14px;}
-    .thumb-panel{padding-left:18px;}
+  /* AUTH */
+  #auth-overlay{
+    display:flex;position:fixed;inset:0;z-index:9999;
+    background:rgba(0,0,0,.88);align-items:center;justify-content:center;
+    backdrop-filter:blur(6px);
   }
-
-  /* ---- AUTH PANEL ---- */
-  #auth-overlay{display:flex;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);
-    align-items:center;justify-content:center;}
-  #auth-box{background:var(--card);border:1px solid var(--border);border-radius:12px;
-    padding:36px 40px;width:100%;max-width:380px;}
-  #auth-box h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--accent);
-    margin-bottom:4px;letter-spacing:2px;}
-  #auth-box p.subtitle{font-size:0.72rem;color:var(--muted);margin-bottom:24px;}
-  .auth-tabs{display:flex;gap:8px;margin-bottom:20px;}
-  .auth-tab{flex:1;padding:8px;background:var(--surface);border:1px solid var(--border);
-    color:var(--muted);border-radius:6px;cursor:pointer;font-size:0.8rem;transition:.2s;}
-  .auth-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  #auth-box{
+    background:var(--card2);border:1px solid var(--border2);border-radius:16px;
+    padding:38px 42px;width:100%;max-width:390px;
+    box-shadow:0 24px 80px rgba(155,93,229,.25);position:relative;overflow:hidden;
+  }
+  #auth-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad);}
+  .auth-logo{display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+  .auth-logo-img{
+    width:130px;height:130px;border-radius:50%;object-fit:cover;
+    border:3px solid rgba(155,93,229,.5);
+    box-shadow:0 0 30px rgba(155,93,229,.5),0 0 60px rgba(200,80,192,.2);
+  }
+  .auth-logo-icon{
+    width:42px;height:42px;background:var(--grad);border-radius:10px;
+    display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+    box-shadow:0 0 20px rgba(155,93,229,.5);
+  }
+  #auth-box h2{
+    font-family:'Black Han Sans',sans-serif;font-size:1.45rem;letter-spacing:1.5px;
+    background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
+  #auth-box p.subtitle{font-size:0.71rem;color:var(--muted2);margin-bottom:24px;margin-top:4px;}
+  .auth-tabs{display:flex;gap:8px;margin-bottom:22px;}
+  .auth-tab{
+    flex:1;padding:9px;background:var(--surface);border:1.5px solid var(--border2);color:var(--muted2);
+    border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:800;font-family:'Nunito',sans-serif;transition:.2s;
+  }
+  .auth-tab.active{background:var(--grad);color:#fff;border-color:transparent;}
   .auth-field{margin-bottom:14px;}
-  .auth-field label{display:block;font-size:0.72rem;color:var(--muted);margin-bottom:4px;}
-  .auth-field input{width:100%;padding:10px 12px;background:var(--surface);border:1px solid var(--border);
-    border-radius:6px;color:var(--text);font-size:0.85rem;outline:none;box-sizing:border-box;}
-  .auth-field input:focus{border-color:var(--accent);}
-  .auth-submit{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;
-    border-radius:6px;font-size:0.9rem;font-weight:600;cursor:pointer;margin-top:4px;transition:.2s;}
-  .auth-submit:hover{filter:brightness(1.1);}
-  .auth-submit:disabled{opacity:.5;cursor:not-allowed;}
-  #auth-msg{margin-top:10px;font-size:0.78rem;min-height:18px;text-align:center;}
-  #auth-msg.error{color:#ff6b6b;}
+  .auth-field label{display:block;font-size:0.69rem;font-weight:800;color:var(--muted2);margin-bottom:5px;letter-spacing:.5px;text-transform:uppercase;}
+  .auth-field input{
+    width:100%;padding:11px 14px;background:var(--surface);border:1.5px solid var(--border2);
+    border-radius:8px;color:var(--text);font-size:0.85rem;font-family:'Nunito',sans-serif;
+    outline:none;box-sizing:border-box;transition:border .2s;
+  }
+  .auth-field input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(155,93,229,.12);}
+  .auth-submit{
+    width:100%;padding:13px;background:var(--grad);color:#fff;border:none;
+    border-radius:8px;font-size:0.9rem;font-weight:900;font-family:'Nunito',sans-serif;
+    cursor:pointer;margin-top:4px;transition:.2s;box-shadow:0 6px 20px rgba(155,93,229,.4);letter-spacing:.5px;
+  }
+  .auth-submit:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(155,93,229,.55);}
+  .auth-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+  #auth-msg{margin-top:12px;font-size:0.77rem;min-height:18px;text-align:center;font-weight:700;}
+  #auth-msg.error{color:var(--youtube);}
   #auth-msg.success{color:var(--done-b);}
-  /* ---- USER BAR in header ---- */
-  .user-bar{display:flex;align-items:center;gap:10px;font-size:0.75rem;}
-  .user-bar span{color:var(--muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .btn-logout{padding:6px 14px;background:transparent;border:1px solid var(--border);
-    color:var(--muted);border-radius:6px;cursor:pointer;font-size:0.75rem;transition:.2s;}
-  .btn-logout:hover{border-color:var(--accent);color:var(--accent);}</style>
+
+  /* FOOTER */
+  footer{
+    text-align:center;padding:28px;color:var(--muted);font-size:0.69rem;
+    font-weight:700;letter-spacing:1px;border-top:1px solid var(--border);margin-top:20px;
+  }
+  footer span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+  @media(max-width:700px){
+    .ep-file{display:none;}
+    .ep-checks{gap:3px;}
+    .check-btn{font-size:0.62rem;padding:3px 7px;}
+    header{padding:12px 14px;}
+    .main{padding:16px 12px;}
+    .panel-row{flex-direction:column;}
+    .hero-band{padding:14px 18px;}
+    #auth-box{padding:28px 22px;}
+  }
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
 <div id="auth-overlay">
   <div id="auth-box">
-    <h2>THE REAL ENGLISH PODCAST</h2>
-    <p class="subtitle">Production Tracker – Acceso privado</p>
+    <div class="auth-logo">
+      <img src="logo.jpg" alt="The Real English Podcast" class="auth-logo-img">
+    </div>
+    <p class="subtitle">Production Tracker — Acceso del equipo</p>
     <div class="auth-tabs">
       <button class="auth-tab active" id="tab-login" onclick="showTab('login')">Iniciar sesión</button>
       <button class="auth-tab" id="tab-register" onclick="showTab('register')">Registrarse</button>
@@ -190,7 +309,7 @@
     <div id="form-login">
       <div class="auth-field"><label>Email</label><input type="email" id="login-email" placeholder="tu@email.com"></div>
       <div class="auth-field"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••"></div>
-      <button class="auth-submit" id="btn-login" onclick="doLogin()">Entrar</button>
+      <button class="auth-submit" id="btn-login" onclick="doLogin()">Entrar al tracker</button>
     </div>
     <div id="form-register" style="display:none">
       <div class="auth-field"><label>Email</label><input type="email" id="reg-email" placeholder="tu@email.com"></div>
@@ -203,32 +322,50 @@
 
 <header>
   <div class="header-left">
-    <h1>🎙 THE REAL ENGLISH PODCAST</h1>
-    <p>Production Tracker + Portadas YouTube</p>
+    <img src="logo.jpg" alt="The Real English Podcast" class="header-logo-img">
+    <div class="header-title">
+      <h1>THE REAL ENGLISH PODCAST</h1>
+      <p>Production Tracker · Canal YouTube · By San &amp; Lau</p>
+    </div>
   </div>
   <div class="stats">
-    <div class="stat"><div class="n green" id="stat-done">49</div><div class="l">Completados</div></div>
-    <div class="stat"><div class="n gray" id="stat-total">49</div><div class="l">Total</div></div>
+    <div class="stat"><div class="n" id="stat-done">0</div><div class="l">Publicados</div></div>
+    <div class="stat"><div class="n gray" id="stat-total">0</div><div class="l">Total Eps</div></div>
     <div class="bar-wrap">
-      <div class="bar-top"><span>Progreso</span><span id="pct">100%</span></div>
-      <div class="bar"><div class="bar-fill" id="bar" style="width:100%"></div></div>
+      <div class="bar-top"><span>YouTube</span><span id="pct">0%</span></div>
+      <div class="bar"><div class="bar-fill" id="bar" style="width:0%"></div></div>
     </div>
     <button class="export-btn" onclick="exportMD()">⬇ Exportar .md</button>
   </div>
-
   <div class="user-bar" id="user-bar" style="display:none">
     <span id="user-email-display"></span>
-    <button class="btn-logout" onclick="doLogout()">Cerrar sesión</button>
+    <button class="btn-logout" onclick="doLogout()">Salir</button>
   </div>
 </header>
 
 <div class="main">
+  <div class="hero-band">
+    <div class="hero-text">
+      <h2>🎙 PRODUCTION COMMAND CENTER</h2>
+      <p>Lleva el control de cada episodio · Chapters every Tuesday &amp; Thursday</p>
+    </div>
+    <div class="hero-tag">@TheRealEnglishPodcastMedia</div>
+  </div>
+
   <div class="summary-grid" id="summary-grid"></div>
+
+  <div class="legend">
+    <span class="legend-label">Etapas:</span>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--capcut)"></div>CapCut</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--portada)"></div>Portada</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--miniatura)"></div>Miniatura</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--youtube)"></div>YouTube</div>
+  </div>
 
   <div class="filter-bar">
     <span class="filter-label">Filtrar:</span>
     <button class="filter-btn active" onclick="setFilter('all',this)">Todos</button>
-    <button class="filter-btn" onclick="setFilter('done',this)">✅ Completados</button>
+    <button class="filter-btn" onclick="setFilter('done',this)">✅ Publicados</button>
     <button class="filter-btn" onclick="setFilter('pending',this)">⏳ Pendientes</button>
     <input class="search-box" id="search" placeholder="🔍 Buscar episodio..." oninput="renderEpisodes()">
   </div>
@@ -236,587 +373,321 @@
   <div id="episodes-container"></div>
 </div>
 
-<footer>The Real English Podcast · Lau & San · ElevenLabs VO3.1 Fast · Martes y Jueves</footer>
+<footer>
+  <span>The Real English Podcast</span> · Lau &amp; San · ElevenLabs VO3.1 Fast · Chapters every Tuesday &amp; Thursday
+</footer>
 
 <script>
+const SUPABASE_URL='https://xvmvbwrdcemeggbkxucz.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2bXZid3JkY2VtZWdnYmt4dWN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTc4NDIsImV4cCI6MjA5MjkzMzg0Mn0.8AyAPYvaEGEQ5X8uPQ08XjArTelUpywxV5rieP2Hlfs';
+const _sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let _currentUser=null;
 
-// =========================================
-// === SUPABASE INTEGRATION ================
-// =========================================
-const SUPABASE_URL = 'https://xvmvbwrdcemeggbkxucz.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2bXZid3JkY2VtZWdnYmt4dWN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTc4NDIsImV4cCI6MjA5MjkzMzg0Mn0.8AyAPYvaEGEQ5X8uPQ08XjArTelUpywxV5rieP2Hlfs'; // << REEMPLAZA con tu anon key de Supabase Settings > API Keys > Legacy > anon public
-const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const CATEGORIES=[
+  {id:'emergencia',name:'Emergencia o Tensión',emoji:'⚠️',color:'#f43f5e'},
+  {id:'cultura',name:'Cultura Americana',emoji:'🇺🇸',color:'#60a5fa'},
+  {id:'dinero',name:'Dinero, Trabajo y Vida Real',emoji:'💵',color:'#34d399'},
+  {id:'relaciones',name:'Relaciones, Amistad y Social',emoji:'🤝',color:'#a78bfa'},
+  {id:'viajes',name:'Viajes y Aventuras',emoji:'✈️',color:'#fb923c'},
+  {id:'opinion',name:'Temas que Generan Opinión',emoji:'🗣️',color:'#2dd4bf'},
+];
 
-// ============================================================
-// AUTH: Supabase Auth functions
-// ============================================================
-let _currentUser = null;
+const EPISODES=[
+  {ep:11,cat:'emergencia',title:'Pulled Over Part 2: We Got a Ticket This Time',file:'EP11_Pulled_Over_Part2.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Fondo oscuro de noche en una carretera americana. Un carro detenido al lado de la vía con las luces de una patrulla azul y roja reflejadas sobre el capó. En primer plano, texto grande en blanco: "WE GOT A TICKET" y debajo en rojo: "Part 2". Pequeño ícono de un policía con linterna al costado. Ambiente de tensión nocturna.'},
+  {ep:12,cat:'emergencia',title:'We Got Scammed as Tourists',file:'EP12_Scammed_Tourists.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Fondo de una calle turística concurrida (puede ser Times Square o similar). Dos figuras de turistas con maletas y cara de confusión o shock. Billete de dólar rasgado o con una X encima. Texto grande: "WE GOT SCAMMED" en rojo con efecto de alerta. Subtexto pequeño: "Real English for real emergencies".'},
+  {ep:13,cat:'emergencia',title:'Flight Cancelled: Surviving the Gate in English',file:'EP13_Flight_Cancelled.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Interior de aeropuerto con pantalla de salidas mostrando "CANCELLED" en rojo junto a varios vuelos. Persona de espaldas con maleta mirando la pantalla. Texto superpuesto: "FLIGHT CANCELLED" en grande y debajo: "How to survive the gate in English". Colores azul aeropuerto y rojo de alerta.'},
+  {ep:14,cat:'emergencia',title:'We Missed Our Bus in the Middle of Nowhere',file:'EP14_Missed_Bus.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Carretera americana vacía al atardecer, horizonte plano, sin edificios a la vista. Un bus alejándose al fondo, dejando una nube de polvo. Persona de pie con mochila en la carretera mirando el bus irse. Texto: "MISSED THE BUS" en amarillo oscuro y debajo: "In the middle of nowhere".'},
+  {ep:15,cat:'cultura',title:'Why Americans Are So Friendly But Hard to Actually Know',file:'EP15_Americans_Friendly.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Dos personas sonriendo ampliamente y saludando, típico estilo americano. Pero detrás de esas caras sonrientes, una pared de vidrio o espejo que separa. Texto: "SO FRIENDLY" en verde brillante y debajo: "But so hard to know" en gris. Contraste visual entre la calidez superficial y la distancia real.'},
+  {ep:16,cat:'cultura',title:'Small Talk: The American Skill Nobody Teaches You',file:'EP16_Small_Talk.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Dos personas en un ascensor o sala de espera, conversando con bocadillos de diálogo. Texto principal: "SMALL TALK" en letras grandes y debajo: "The skill nobody teaches you". Fondo neutro tipo oficina o lobby americano.'},
+  {ep:17,cat:'cultura',title:'American Sarcasm: When They\'re Joking and You Don\'t Know It',file:'EP17_American_Sarcasm.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Una persona con expresión seria diciendo algo con un bocadillo de texto que tiene comillas grandes. Otra persona al lado con cara de confusión total, con un signo de interrogación flotando. Texto: "AMERICAN SARCASM". Fondo colorido y dinámico.'},
+  {ep:18,cat:'cultura',title:'Sports Culture in the US: What You Need to Know',file:'EP18_Sports_Culture.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Collage de elementos deportivos americanos: casco de fútbol americano, pelota de basketball, hot dog, vaso de cerveza, bandera americana. Estadio lleno de fondo difuminado. Texto: "SPORTS CULTURE". Subtexto: "What you NEED to know".'},
+  {ep:19,cat:'cultura',title:'Why "I\'m Fine" Doesn\'t Always Mean Fine',file:'EP19_Im_Fine.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Persona con una sonrisa forzada y pulgar arriba, pero detrás de ella sombras o elementos que sugieren todo lo contrario. Texto gigante entre comillas: "I\'M FINE" con un subtexto pequeño: "...or is it?".'},
+  {ep:20,cat:'cultura',title:'The Unwritten Rules of American Bathrooms and Public Spaces',file:'EP20_Unwritten_Rules.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Íconos simples y limpios: baño público, persona respetando espacio personal en fila, señales de etiqueta no escritas. Estética de manual o guía visual. Texto: "UNWRITTEN RULES" en rojo y subtexto: "American public spaces".'},
+  {ep:21,cat:'cultura',title:'Why Americans Talk About the Weather All the Time',file:'EP21_Weather_Talk.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Persona americana conversando con nubes, sol, lluvia y nieve a su alrededor. Bocadillos de diálogo con frases como "Crazy weather, huh?". Texto: "THE WEATHER" en grande con nubes decorativas.'},
+  {ep:22,cat:'cultura',title:'College Culture in the US: What Movies Don\'t Tell You',file:'EP22_College_Culture.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Campus universitario americano de fondo con hojas otoñales. La versión real: estudiante con laptop y café, agotado pero sonriente. Texto: "COLLEGE CULTURE" y subtexto: "What movies don\'t tell you".'},
+  {ep:23,cat:'dinero',title:'Job Interview English That Actually Gets You Hired',file:'EP23_Job_Interview.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Persona bien vestida en entrevista de trabajo, confiada y sonriente. Al fondo, oficina moderna americana. Check mark verde grande sobre su cabeza indicando éxito. Texto: "JOB INTERVIEW". Subtexto: "English that actually gets you hired".'},
+  {ep:24,cat:'dinero',title:'How to Ask for a Raise Without Sounding Desperate',file:'EP24_Ask_For_Raise.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Persona parada frente a su jefe en una oficina, con postura segura. Globo de diálogo con texto como "I\'d like to discuss my compensation". Texto: "ASK FOR A RAISE" en verde y subtexto: "Without sounding desperate".'},
+  {ep:25,cat:'dinero',title:'Renting Your First Apartment in the US',file:'EP25_Renting_Apartment.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Puerta de apartamento americano con llaves en la cerradura. Persona con caja de mudanza sonriendo. Texto: "RENTING AN APARTMENT" en letras limpias y subtexto: "Your first place in the US".'},
+  {ep:26,cat:'dinero',title:'Salary Negotiation: Real Phrases That Work',file:'EP26_Salary_Negotiation.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Dos personas en una mesa de negociación, ambas con posturas de confianza. Gráfica de barras subiendo al fondo. Texto: "SALARY NEGOTIATION" en letras fuertes y doradas. Subtexto: "Real phrases that actually work".'},
+  {ep:27,cat:'dinero',title:'How to Call in Sick in English Without Sounding Fake',file:'EP27_Call_In_Sick.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Persona en cama con manta, termómetro en mano, mirando el teléfono con expresión honesta. Bocadillo de teléfono con texto: "Hey, I\'m not feeling well today...". Texto: "CALLING IN SICK". Subtexto: "How to sound natural (not fake)".'},
+  {ep:28,cat:'dinero',title:'How to Write a Professional Email in Real English',file:'EP28_Professional_Email.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Pantalla de computadora con un email abierto, limpio y profesional. Cursor sobre el botón "Send". Texto: "PROFESSIONAL EMAIL". Subtexto: "Real English that gets replies". Fondo azul oscuro con detalles blancos.'},
+  {ep:29,cat:'dinero',title:'How to Quit Your Job Professionally in English',file:'EP29_Quit_Job.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Persona caminando hacia una puerta de salida con maletín, mirando hacia atrás con una sonrisa tranquila. Texto: "QUITTING YOUR JOB" en letras grandes y subtexto: "How to leave professionally".'},
+  {ep:30,cat:'dinero',title:'Health Insurance in the US: The Vocabulary You Need',file:'EP30_Health_Insurance.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Fondo de consultorio médico americano. En primer plano, tarjeta de seguro médico con texto en inglés (deductible, copay, premium). Texto: "HEALTH INSURANCE". Subtexto: "The vocabulary that saves you money".'},
+  {ep:31,cat:'dinero',title:'How to Complain at Work Without Getting Fired',file:'EP31_Complain_Work.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Persona en oficina con expresión de calma estratégica, hablando con su jefe. Globo de diálogo con "I\'d like to raise a concern...". Una señal de peligro (FIRED) tachada. Texto: "COMPLAIN AT WORK". Subtexto: "Without getting fired".'},
+  {ep:32,cat:'dinero',title:'Freelancing in English: Talking to American Clients',file:'EP32_Freelancing.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Freelancer trabajando desde casa o café, laptop abierta, videollamada con cliente americano en pantalla. Mapa del mundo de fondo. Texto: "FREELANCING IN ENGLISH". Subtexto: "Talking to American clients".'},
+  {ep:33,cat:'dinero',title:'How to Ask for a Recommendation Letter in English',file:'EP33_Recommendation_Letter.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Carta formal elegante con sobre abierto. Una persona entregando la carta con una sonrisa cálida y profesional. Fondo de biblioteca o campus universitario. Texto: "RECOMMENDATION LETTER".'},
+  {ep:34,cat:'dinero',title:'Working From Home With an American Team',file:'EP34_WFH_American_Team.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Persona en home office con pantalla mostrando videollamada con equipo americano. Elementos: Slack, Zoom, reloj con zonas horarias. Texto: "WORKING REMOTE". Subtexto: "With an American team".'},
+  {ep:35,cat:'relaciones',title:'How to Make Friends as an Adult in English',file:'EP35_Making_Friends.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Dos adultos en un café o parque, conversando con naturalidad, con una conexión genuina visible. Texto: "MAKING FRIENDS". Subtexto: "As an adult. In English." Colores cálidos: terracota, crema, verde salvia.'},
+  {ep:36,cat:'relaciones',title:'How to Say No Without Sounding Rude',file:'EP36_Say_No.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Persona con postura tranquila y segura, levantando una mano con calma. La palabra "NO" en grande pero en colores cálidos. Subtexto: "Without sounding rude". Sensación de poder gentil.'},
+  {ep:37,cat:'relaciones',title:'First Date in English: What to Say and What to Avoid',file:'EP37_First_Date.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Dos personas en un restaurante o café con ambiente íntimo y cálido. Expresiones de curiosidad y conexión genuina. Texto: "FIRST DATE". Subtexto: "What to say. What to avoid." Colores cálidos de noche.'},
+  {ep:38,cat:'relaciones',title:'Apologizing in English: When Sorry Isn\'t Enough',file:'EP38_Apologizing.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Persona mirando directamente a cámara con expresión genuina de remordimiento. La palabra "SORRY" visible pero con texto indicando que hay más. Texto: "APOLOGIZING IN ENGLISH". Subtexto: "When sorry isn\'t enough".'},
+  {ep:39,cat:'relaciones',title:'How to Comfort Someone in English When You Don\'t Know What to Say',file:'EP39_Comforting.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Una mano posándose suavemente sobre el hombro de alguien en un momento difícil. Fondo suave y difuminado. Luz cálida. Texto: "WHEN YOU DON\'T KNOW WHAT TO SAY". Subtexto: "How to comfort someone in English".'},
+  {ep:40,cat:'relaciones',title:'How to Introduce Yourself at a Party in English',file:'EP40_Party_Introduction.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Ambiente de fiesta adulta: luces de fondo, gente conversando en grupos. Persona con copa de vino sonriendo. Bocadillo con "I\'m [name], by the way". Texto: "AT A PARTY". Subtexto: "How to introduce yourself in English".'},
+  {ep:41,cat:'relaciones',title:'Ghosting, Breadcrumbing & Modern Dating — in English',file:'EP41_Modern_Dating.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Teléfono con mensajes sin respuesta (visto pero sin reply). Fantasma pequeño y cómico flotando sobre el teléfono. Fondo oscuro con tonos púrpura y azul neón — estética de dating app. Texto: "GHOSTING. BREADCRUMBING. MODERN DATING."'},
+  {ep:42,cat:'relaciones',title:'How to Tell Someone You Like Them in English',file:'EP42_Tell_Someone_You_Like_Them.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Persona mirando a alguien con esa expresión específica de interés romántico contenido. Fondo suave con bokeh. Bocadillo con "I really like you". Texto: "I LIKE YOU" en letras grandes. Subtexto: "How to say it in English."'},
+  {ep:43,cat:'viajes',title:'New York Part 2: Real Street Interactions',file:'EP43_New_York_Part2.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Calle de Manhattan en movimiento: multitud, taxis amarillos, edificios. Persona navegando la ciudad con confianza. Texto: "NEW YORK". Subtexto: "Real street interactions". Colores icónicos: amarillo taxi, gris acero, rojo ladrillo.'},
+  {ep:44,cat:'viajes',title:'Las Vegas: The English You Need on the Strip',file:'EP44_Las_Vegas.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Strip de Las Vegas de noche con todas sus luces y letreros de neón. Silueta de persona mirando las luces con expresión de asombro. Texto: "LAS VEGAS" en letras de neón brillante. Subtexto: "The English you need on the Strip".'},
+  {ep:45,cat:'viajes',title:'Disney World in English: Navigating the Magic',file:'EP45_Disney_World.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Castillo de Magic Kingdom al fondo (en silueta) con fuegos artificiales. Mapa del parque con rutas trazadas y anotaciones en inglés (Lightning Lane, wait time, rope drop). Texto: "DISNEY WORLD". Subtexto: "Navigate it in English".'},
+  {ep:46,cat:'viajes',title:'Airbnb English: Talking to Your Host Like a Pro',file:'EP46_Airbnb.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Puerta de un apartamento acogedor abriéndose para revelar un interior cálido y bien decorado. Teléfono con conversación de chat visible. Texto: "AIRBNB ENGLISH". Subtexto: "Talk to your host like a pro".'},
+  {ep:47,cat:'viajes',title:'Train Travel in the US: Real English on the Rails',file:'EP47_Train_Travel.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Vista desde ventana de tren con paisaje americano pasando — montañas, campos, horizonte amplio. Interior del tren en primer plano: asiento cómodo, café, vista panorámica. Texto: "TRAIN TRAVEL USA". Subtexto: "Real English on the rails".'},
+  {ep:48,cat:'viajes',title:'Tipping, Taxes & Receipts: The Math Nobody Explains',file:'EP48_Tipping_Taxes.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Recibo de restaurante americano en primer plano con los tres elementos visibles: Subtotal, Tax, y Tip. Lapicero calculando el porcentaje. Texto: "TIPPING. TAXES. RECEIPTS." Subtexto: "The math nobody explains".'},
+  {ep:49,cat:'opinion',title:'Is Social Media Killing Real Conversation?',file:'EP49_Social_Media_Conversation.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Dos personas sentadas juntas pero mirando sus teléfonos en lugar de hablarse. Contraste visual entre el globo de chat digital brillante y el vacío de conversación real entre ellos. Texto: "IS SOCIAL MEDIA KILLING REAL CONVERSATION?"'},
+  {ep:50,cat:'opinion',title:'AI vs Human Connection: Are We Losing Something?',file:'EP50_AI_Human_Connection.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Mano humana casi tocando una mano digital/de IA — estética tipo La Creación de Miguel Ángel pero con la mano de IA hecha de código o circuitos. Fondo oscuro con partículas de luz. Texto: "AI vs HUMAN CONNECTION". Subtexto: "Are we losing something?"'},
+  {ep:51,cat:'opinion',title:'Is English Still the Language of the Future?',file:'EP51_English_Future.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Globo terráqueo con líneas de conexión entre países, con el idioma inglés representado como la red principal pero con otras lenguas emergiendo. Fondo futurista. Texto: "THE LANGUAGE OF THE FUTURE?" Subtexto: "Is it still English?"'},
+  {ep:52,cat:'opinion',title:'Does Your Accent Define You? Real Talk',file:'EP52_Accent_Identity.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Boca hablando con ondas sonoras visibles saliendo. Las ondas forman palabras o siluetas de diferentes banderas o culturas. Expresión de orgullo y confianza. Texto: "YOUR ACCENT". Subtexto: "Does it define you?" Colores vibrantes y multiculturales.'},
+  {ep:53,cat:'opinion',title:'Is It Rude to Speak Your Language Around People Who Don\'t Understand?',file:'EP53_Speaking_Your_Language.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Grupo de personas en una mesa: algunos hablando en un idioma mientras uno mira con cara de excluido. Bocadillos de idiomas diferentes. Texto: "IS IT RUDE?" Subtexto: "Speaking your language around others".'},
+  {ep:54,cat:'opinion',title:'Should Everyone Learn English? Honest Opinions',file:'EP54_Should_Everyone_Learn_English.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Mapa del mundo con la palabra "ENGLISH?" superpuesta, con signos de interrogación en varios continentes. Fondo que mezcla el poder del inglés global con la riqueza de otros idiomas. Texto: "SHOULD EVERYONE LEARN ENGLISH?" Subtexto: "Honest opinions."'},
+  {ep:55,cat:'opinion',title:'Is It Harder to Make Real Friends as an Adult?',file:'EP55_Adult_Friendships.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Dos personas adultas intentando conectar en un contexto cotidiano — café, parque, trabajo. La dificultad sugerida por cierta distancia visible. Texto: "MAKING FRIENDS AS AN ADULT". Subtexto: "Is it harder?"'},
+  {ep:56,cat:'opinion',title:'Would You Move to the US? Honest Pros and Cons',file:'EP56_Move_To_US.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Maleta lista para viajar frente a un skyline americano icónico. A la izquierda: elementos positivos (oportunidad, dólar, libertad). A la derecha: elementos de duda (salud, soledad, costo). Balanza visual en el centro. Texto: "WOULD YOU MOVE TO THE US?" Subtexto: "Honest pros & cons."'},
+  {ep:57,cat:'opinion',title:'Do You Need a College Degree Anymore? Real Talk',file:'EP57_College_Degree.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Diploma universitario con un signo de interrogación grande encima. A un lado: laptop con código y certificado online. Texto: "DO YOU STILL NEED A DEGREE?" Subtexto: "Real talk."'},
+  {ep:58,cat:'opinion',title:'Is It Okay to Use AI to Help You Write in English?',file:'EP58_AI_Writing.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Mano humana escribiendo y mano de IA escribiendo lado a lado en el mismo teclado o papel. La imagen no juzga — muestra la colaboración. Texto: "AI + YOUR ENGLISH". Subtexto: "Is it okay?"'},
+  {ep:59,cat:'opinion',title:'Has Social Media Made Us Better or Worse at English?',file:'EP59_Social_Media_English.docx',capcut:false,portada:false,miniatura:false,youtube:false,notes:'',thumb:'Pantalla de teléfono partida por la mitad: lado izquierdo muestra vocabulario nuevo aprendido por redes — colorido y dinámico. Lado derecho muestra texto sin puntuación, abreviaturas — más oscuro. Texto: "BETTER or WORSE at English?" Subtexto: "Social media\'s real impact."'},
+];
 
-async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass = document.getElementById('login-pass').value;
-  const btn = document.getElementById('btn-login');
-  if (!email || !pass) { showMsg('Completa todos los campos', 'error'); return; }
-  btn.disabled = true; btn.textContent = 'Entrando...';
-  const { data, error } = await _sb.auth.signInWithPassword({ email, password: pass });
-  if (error) { showMsg(error.message, 'error'); btn.disabled=false; btn.textContent='Entrar'; }
-  else { onAuthSuccess(data.user); }
+let currentFilter='all';
+const openPanels=new Set();
+
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const btn=document.getElementById('btn-login');
+  if(!email||!pass){showMsg('Completa todos los campos','error');return;}
+  btn.disabled=true;btn.textContent='Entrando...';
+  const{data,error}=await _sb.auth.signInWithPassword({email,password:pass});
+  if(error){showMsg(error.message,'error');btn.disabled=false;btn.textContent='Entrar al tracker';}
+  else{onAuthSuccess(data.user);}
 }
 
-async function doRegister() {
-  const email = document.getElementById('reg-email').value.trim();
-  const pass = document.getElementById('reg-pass').value;
-  const btn = document.getElementById('btn-register');
-  if (!email || !pass) { showMsg('Completa todos los campos', 'error'); return; }
-  if (pass.length < 6) { showMsg('La contraseña debe tener al menos 6 caracteres', 'error'); return; }
-  btn.disabled = true; btn.textContent = 'Creando cuenta...';
-  const { data, error } = await _sb.auth.signUp({ email, password: pass });
-  if (error) { showMsg(error.message, 'error'); btn.disabled=false; btn.textContent='Crear cuenta'; }
-  else { showMsg('¡Cuenta creada! Revisa tu email para confirmar.', 'success'); btn.disabled=false; btn.textContent='Crear cuenta'; }
+async function doRegister(){
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  const btn=document.getElementById('btn-register');
+  if(!email||!pass){showMsg('Completa todos los campos','error');return;}
+  if(pass.length<6){showMsg('La contraseña debe tener al menos 6 caracteres','error');return;}
+  btn.disabled=true;btn.textContent='Creando cuenta...';
+  const{data,error}=await _sb.auth.signUp({email,password:pass});
+  if(error){showMsg(error.message,'error');btn.disabled=false;btn.textContent='Crear cuenta';}
+  else{
+    showMsg('¡Cuenta creada! Iniciando sesión...','success');
+    const{data:d2,error:e2}=await _sb.auth.signInWithPassword({email,password:pass});
+    if(!e2&&d2.user){onAuthSuccess(d2.user);}
+    else{btn.disabled=false;btn.textContent='Crear cuenta';}
+  }
 }
 
-async function doLogout() {
+async function doLogout(){
   await _sb.auth.signOut();
-  _currentUser = null;
-  document.getElementById('auth-overlay').style.display = 'flex';
-  document.getElementById('user-bar').style.display = 'none';
-  document.getElementById('user-email-display').textContent = '';
-  EPISODES.forEach(ep => { ep.done = false; });
-  openThumbs.clear();
-  renderAll();
+  _currentUser=null;
+  document.getElementById('auth-overlay').style.display='flex';
+  document.getElementById('user-bar').style.display='none';
+  document.getElementById('user-email-display').textContent='';
+  EPISODES.forEach(ep=>{ep.capcut=false;ep.portada=false;ep.miniatura=false;ep.youtube=false;ep.notes='';});
+  openPanels.clear();renderAll();
 }
 
-function showMsg(text, type) {
-  const el = document.getElementById('auth-msg');
-  el.textContent = text;
-  el.className = type || '';
+function showMsg(text,type){
+  const el=document.getElementById('auth-msg');
+  el.textContent=text;el.className=type||'';
 }
 
-function showTab(tab) {
-  document.getElementById('form-login').style.display = tab === 'login' ? '' : 'none';
-  document.getElementById('form-register').style.display = tab === 'register' ? '' : 'none';
-  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
-  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
-  document.getElementById('auth-msg').textContent = '';
+function showTab(tab){
+  document.getElementById('form-login').style.display=tab==='login'?'':'none';
+  document.getElementById('form-register').style.display=tab==='register'?'':'none';
+  document.getElementById('tab-login').classList.toggle('active',tab==='login');
+  document.getElementById('tab-register').classList.toggle('active',tab==='register');
+  document.getElementById('auth-msg').textContent='';
 }
 
-function onAuthSuccess(user) {
-  _currentUser = user;
-  document.getElementById('auth-overlay').style.display = 'none';
-  document.getElementById('user-bar').style.display = 'flex';
-  document.getElementById('user-email-display').textContent = user.email;
+function onAuthSuccess(user){
+  _currentUser=user;
+  document.getElementById('auth-overlay').style.display='none';
+  document.getElementById('user-bar').style.display='flex';
+  document.getElementById('user-email-display').textContent=user.email;
   _loadUserProgress();
 }
 
-// ============================================================
-// USER PROGRESS: load/save per user
-// ============================================================
-async function _loadUserProgress() {
-  if (!_currentUser) return;
-  const { data, error } = await _sb
-    .from('user_progress')
-    .select('ep_num, is_done, has_thumb')
-    .eq('user_id', _currentUser.id);
-  if (error) { console.error('Error cargando progreso:', error); renderAll(); return; }
-  EPISODES.forEach(ep => { ep.done = false; });
-  openThumbs.clear();
-  if (data && data.length > 0) {
-    data.forEach(row => {
-      const ep = EPISODES.find(e => e.ep === Number(row.ep_num));
-      if (ep) ep.done = row.is_done;
-      if (row.has_thumb) openThumbs.add(Number(row.ep_num));
+async function _loadUserProgress(){
+  if(!_currentUser)return;
+  EPISODES.forEach(ep=>{ep.capcut=false;ep.portada=false;ep.miniatura=false;ep.youtube=false;ep.notes='';});
+  const{data,error}=await _sb.from('user_progress').select('ep_num,is_done,has_thumb,capcut,portada,miniatura,youtube,notes').eq('user_id',_currentUser.id);
+  if(error){console.error('Error cargando progreso:',error);renderAll();return;}
+  if(data&&data.length>0){
+    data.forEach(row=>{
+      const ep=EPISODES.find(e=>e.ep===Number(row.ep_num));
+      if(!ep)return;
+      ep.capcut=row.capcut??false;ep.portada=row.portada??false;
+      ep.miniatura=row.miniatura??false;ep.youtube=row.youtube??(row.is_done??false);
+      ep.notes=row.notes??'';
     });
   }
   renderAll();
 }
-async function _upsertProgress(epNum, isDone, isThumb) {
-  if (!_currentUser) return;
+
+async function _upsertProgress(epNum){
+  if(!_currentUser)return;
+  const ep=EPISODES.find(e=>e.ep===epNum);
+  if(!ep)return;
   await _sb.from('user_progress').upsert(
-    { user_id: _currentUser.id, ep_num: epNum, is_done: isDone, has_thumb: isThumb, updated_at: new Date().toISOString() },
-    { onConflict: 'user_id,ep_num' }
+    {user_id:_currentUser.id,ep_num:String(epNum),is_done:ep.youtube,has_thumb:ep.portada,
+     capcut:ep.capcut,portada:ep.portada,miniatura:ep.miniatura,youtube:ep.youtube,
+     notes:ep.notes,updated_at:new Date().toISOString()},
+    {onConflict:'user_id,ep_num'}
   );
 }
 
-const _origToggleDone = toggleDone;
-toggleDone = async function(ep, event) {
-  _origToggleDone(ep, event);
-  if (!_currentUser) return;
-  const epObj = EPISODES.find(e => e.ep === ep);
-  if (epObj) await _upsertProgress(ep, epObj.done, openThumbs.has(ep));
-};
-
-const _origToggleThumb = toggleThumb;
-toggleThumb = async function(ep) {
-  _origToggleThumb(ep);
-  if (!_currentUser) return;
-  const epObj = EPISODES.find(e => e.ep === ep);
-  if (epObj) await _upsertProgress(ep, epObj.done, openThumbs.has(ep));
-};
-
-// ============================================================
-const CATEGORIES = [
-  { id: 'emergencia', name: 'Emergencia o Tensión', emoji: '⚠️', color: '#e74c3c' },
-  { id: 'cultura', name: 'Cultura Americana', emoji: '🇺🇸', color: '#3498db' },
-  { id: 'dinero', name: 'Dinero, Trabajo y Vida Real', emoji: '💵', color: '#2ecc71' },
-  { id: 'relaciones', name: 'Relaciones, Amistad y Social', emoji: '🤝', color: '#9b59b6' },
-  { id: 'viajes', name: 'Viajes y Aventuras', emoji: '✈️', color: '#f39c12' },
-  { id: 'opinion', name: 'Temas que Generan Opinión', emoji: '🗣️', color: '#1abc9c' },
-];
-
-const EPISODES = [
-  {
-    ep:1, cat:'emergencia',
-    title:'Pulled Over Part 2: We Got a Ticket This Time',
-    file:'EP01_Pulled_Over_Part2.docx', done:true,
-    thumb:'Fondo oscuro de noche en una carretera americana. Un carro detenido al lado de la vía con las luces de una patrulla azul y roja reflejadas sobre el capó. En primer plano, texto grande en blanco: "WE GOT A TICKET" y debajo en rojo: "Part 2". Pequeño ícono de un policía con linterna al costado. Ambiente de tensión nocturna.'
-  },
-  {
-    ep:2, cat:'emergencia',
-    title:'We Got Scammed as Tourists',
-    file:'EP02_Scammed_Tourists.docx', done:true,
-    thumb:'Fondo de una calle turística concurrida (puede ser Times Square o similar). Dos figuras de turistas con maletas y cara de confusión o shock. Billete de dólar rasgado o con una X encima. Texto grande: "WE GOT SCAMMED" en rojo con efecto de alerta. Subtexto pequeño: "Real English for real emergencies".'
-  },
-  {
-    ep:3, cat:'emergencia',
-    title:'Flight Cancelled: Surviving the Gate in English',
-    file:'EP03_Flight_Cancelled.docx', done:true,
-    thumb:'Interior de aeropuerto con pantalla de salidas mostrando "CANCELLED" en rojo junto a varios vuelos. Persona de espaldas con maleta mirando la pantalla. Expresión de caos organizado. Texto superpuesto: "FLIGHT CANCELLED" en grande y debajo: "How to survive the gate in English". Colores azul aeropuerto y rojo de alerta.'
-  },
-  {
-    ep:4, cat:'emergencia',
-    title:'We Missed Our Bus in the Middle of Nowhere',
-    file:'EP04_Missed_Bus.docx', done:true,
-    thumb:'Carretera americana vacía al atardecer, horizonte plano, sin edificios a la vista. Un bus alejándose al fondo, dejando una nube de polvo. Persona de pie con mochila en la carretera mirando el bus irse. Texto: "MISSED THE BUS" en amarillo oscuro y debajo: "In the middle of nowhere". Sensación de aislamiento pero con humor.'
-  },
-  {
-    ep:5, cat:'cultura',
-    title:'Why Americans Are So Friendly But Hard to Actually Know',
-    file:'EP05_Americans_Friendly.docx', done:true,
-    thumb:'Dos personas sonriendo ampliamente y saludando, típico estilo americano. Pero detrás de esas caras sonrientes, una pared de vidrio o espejo que separa. Texto: "SO FRIENDLY" en verde brillante y debajo: "But so hard to know" en gris. Contraste visual entre la calidez superficial y la distancia real. Fondo con ambiente de barrio suburbano americano.'
-  },
-  {
-    ep:6, cat:'cultura',
-    title:'Small Talk: The American Skill Nobody Teaches You',
-    file:'EP06_Small_Talk.docx', done:true,
-    thumb:'Dos personas en un ascensor o sala de espera, conversando con bocadillos de diálogo que dicen cosas como "Nice weather!", "How about those [team]s?". Expresión de naturalidad americana. Texto principal: "SMALL TALK" en letras grandes y debajo: "The skill nobody teaches you". Fondo neutro tipo oficina o lobby americano.'
-  },
-  {
-    ep:7, cat:'cultura',
-    title:'American Sarcasm: When They\'re Joking and You Don\'t Know It',
-    file:'EP07_American_Sarcasm.docx', done:true,
-    thumb:'Una persona con expresión seria diciendo algo con un bocadillo de texto que tiene comillas grandes ("Oh sure, that\'s GREAT"). Otra persona al lado con cara de confusión total, con un signo de interrogación flotando. Texto: "AMERICAN SARCASM" con letras entrecomilladas o en itálica. Fondo colorido y dinámico. Sensación de malentendido cómico.'
-  },
-  {
-    ep:8, cat:'cultura',
-    title:'Sports Culture in the US: What You Need to Know',
-    file:'EP08_Sports_Culture.docx', done:true,
-    thumb:'Collage de elementos deportivos americanos: casco de fútbol americano, pelota de basketball, hot dog, vaso de cerveza, bandera americana con colores de equipo. Estadio lleno de fondo difuminado. Texto: "SPORTS CULTURE" en letras estilo jersey deportivo. Subtexto: "What you NEED to know". Colores rojos, azules y dorados.'
-  },
-  {
-    ep:9, cat:'cultura',
-    title:'Why "I\'m Fine" Doesn\'t Always Mean Fine',
-    file:'EP09_Im_Fine.docx', done:true,
-    thumb:'Persona con una sonrisa forzada y pulgar arriba, pero detrás de ella sombras o elementos que sugieren todo lo contrario (caos, preocupación). Texto gigante entre comillas: "I\'M FINE" con un subtexto pequeño: "...or is it?". La ironía visual es clave. Colores pasteles con un toque oscuro. Estética americana cotidiana.'
-  },
-  {
-    ep:10, cat:'cultura',
-    title:'The Unwritten Rules of American Bathrooms and Public Spaces',
-    file:'EP10_Unwritten_Rules.docx', done:true,
-    thumb:'Íconos simples y limpios: baño público, persona respetando espacio personal en fila, señales de etiqueta no escritas. Estética de manual o guía visual con fondo blanco o crema. Texto: "UNWRITTEN RULES" en rojo y subtexto: "American public spaces". Pequeños íconos de prohibición o check marks junto a comportamientos. Tono informativo y divertido.'
-  },
-  {
-    ep:11, cat:'cultura',
-    title:'Why Americans Talk About the Weather All the Time',
-    file:'EP11_Weather_Talk.docx', done:true,
-    thumb:'Persona americana conversando con nubes, sol, lluvia y nieve a su alrededor como decorado. Bocadillos de diálogo con frases como "Crazy weather, huh?" y "Can you believe this heat?". Fondo soleado y neutro. Texto: "THE WEATHER" en grande con nubes decorativas. Subtexto: "Why Americans can\'t stop talking about it". Tono amigable y curioso.'
-  },
-  {
-    ep:12, cat:'cultura',
-    title:'College Culture in the US: What Movies Don\'t Tell You',
-    file:'EP12_College_Culture.docx', done:true,
-    thumb:'Campus universitario americano de fondo con hojas otoñales. En primer plano, una pantalla de cine o televisión mostrando la versión Hollywood de la universidad (fiesta, toga) tachada con una X. Al lado, la versión real: estudiante con laptop y café, agotado pero sonriente. Texto: "COLLEGE CULTURE" y subtexto: "What movies don\'t tell you".'
-  },
-  {
-    ep:13, cat:'dinero',
-    title:'Job Interview English That Actually Gets You Hired',
-    file:'EP13_Job_Interview.docx', done:true,
-    thumb:'Persona bien vestida en entrevista de trabajo, confiada y sonriente. Al fondo, oficina moderna americana. Elementos visuales: un check mark verde grande sobre su cabeza indicando éxito. Texto: "JOB INTERVIEW" en letras corporativas y subtexto: "English that actually gets you hired". Colores azul corporativo y verde de éxito. Sensación de confianza y profesionalismo.'
-  },
-  {
-    ep:14, cat:'dinero',
-    title:'How to Ask for a Raise Without Sounding Desperate',
-    file:'EP14_Ask_For_Raise.docx', done:true,
-    thumb:'Persona parada frente a su jefe (de espaldas) en una oficina, con postura segura. Billetes de dólar o signo de $ visible pero discreto. Globo de diálogo con texto como "I\'d like to discuss my compensation". Expresión de calma y confianza. Texto: "ASK FOR A RAISE" en verde y subtexto: "Without sounding desperate". Ambiente de oficina americana moderna.'
-  },
-  {
-    ep:15, cat:'dinero',
-    title:'Renting Your First Apartment in the US',
-    file:'EP15_Renting_Apartment.docx', done:true,
-    thumb:'Puerta de apartamento americano con llaves en la cerradura. Fondo de calle urbana americana con edificios de ladrillo. Persona con caja de mudanza sonriendo. Elementos: contrato de arrendamiento, llave, signo de dólar discreto. Texto: "RENTING AN APARTMENT" en letras limpias y subtexto: "Your first place in the US". Colores cálidos de hogar.'
-  },
-  {
-    ep:16, cat:'dinero',
-    title:'Salary Negotiation: Real Phrases That Work',
-    file:'EP16_Salary_Negotiation.docx', done:true,
-    thumb:'Dos personas en una mesa de negociación, ambas con posturas de confianza. Gráfica de barras subiendo al fondo. Elementos: contrato, lapicero, signo de dólar. Texto: "SALARY NEGOTIATION" en letras fuertes y doradas. Subtexto: "Real phrases that actually work". Fondo oscuro con acentos dorados. Sensación de poder y profesionalismo.'
-  },
-  {
-    ep:17, cat:'dinero',
-    title:'How to Call in Sick in English Without Sounding Fake',
-    file:'EP17_Call_In_Sick.docx', done:true,
-    thumb:'Persona en cama con manta, termómetro en mano, mirando el teléfono con expresión de dudosa pero honesta. Fondo de habitación cálida y acogedora. Bocadillo de teléfono con texto: "Hey, I\'m not feeling well today...". Texto: "CALLING IN SICK" en letras cómodas y subtexto: "How to sound natural (not fake)". Colores cálidos: beige, rojo suave.'
-  },
-  {
-    ep:18, cat:'dinero',
-    title:'How to Write a Professional Email in Real English',
-    file:'EP18_Professional_Email.docx', done:true,
-    thumb:'Pantalla de computadora con un email abierto, limpio y profesional. Cursor sobre el botón "Send". Decorado con íconos de check marks sobre párrafos bien escritos. Texto: "PROFESSIONAL EMAIL" en fuente sans-serif limpia. Subtexto: "Real English that gets replies". Fondo azul oscuro con detalles blancos. Estética tech y moderna.'
-  },
-  {
-    ep:19, cat:'dinero',
-    title:'How to Quit Your Job Professionally in English',
-    file:'EP19_Quit_Job.docx', done:true,
-    thumb:'Persona caminando hacia una puerta de salida con maletín, mirando hacia atrás con una sonrisa tranquila y segura. Oficina de fondo. Puerta con letras que dicen "EXIT" pero sin drama. Texto: "QUITTING YOUR JOB" en letras grandes y subtexto: "How to leave professionally". Colores neutros con un toque de libertad — cielo azul por la ventana.'
-  },
-  {
-    ep:20, cat:'dinero',
-    title:'Health Insurance in the US: The Vocabulary You Need',
-    file:'EP20_Health_Insurance.docx', done:true,
-    thumb:'Fondo de consultorio médico americano. En primer plano, tarjeta de seguro médico con texto en inglés (deductible, copay, premium). Expresión de confusión transformándose en comprensión. Íconos médicos simples. Texto: "HEALTH INSURANCE" en letras claras y subtexto: "The vocabulary that saves you money". Colores azul médico y blanco. Tono serio pero accesible.'
-  },
-  {
-    ep:21, cat:'dinero',
-    title:'How to Complain at Work Without Getting Fired',
-    file:'EP21_Complain_Work.docx', done:true,
-    thumb:'Persona en oficina con expresión de calma estratégica, hablando con su jefe. Al fondo, otros empleados. Globo de diálogo con "I\'d like to raise a concern...". Una señal de peligro (FIRED) tachada con una X. Texto: "COMPLAIN AT WORK" en rojo y subtexto: "Without getting fired". Fondo de oficina moderna. Tono de astucia profesional.'
-  },
-  {
-    ep:22, cat:'dinero',
-    title:'Freelancing in English: Talking to American Clients',
-    file:'EP22_Freelancing.docx', done:true,
-    thumb:'Freelancer trabajando desde casa o café, laptop abierta, videollamada con cliente americano en pantalla. Mapa del mundo de fondo con conexiones entre países. Elementos: factura, dólar, laptop. Texto: "FREELANCING IN ENGLISH" en letras modernas. Subtexto: "Talking to American clients". Colores vibrantes: naranja y azul oscuro. Sensación de libertad laboral global.'
-  },
-  {
-    ep:23, cat:'dinero',
-    title:'How to Ask for a Recommendation Letter in English',
-    file:'EP23_Recommendation_Letter.docx', done:true,
-    thumb:'Carta formal elegante con sobre abierto, sello oficial discreto. Una persona entregando la carta con una sonrisa cálida y profesional. Fondo de biblioteca o campus universitario. Texto: "RECOMMENDATION LETTER" en letras clásicas y subtexto: "How to ask for one in English". Colores: azul marino, crema, dorado. Ambiente académico y profesional.'
-  },
-  {
-    ep:24, cat:'dinero',
-    title:'Working From Home With an American Team',
-    file:'EP24_WFH_American_Team.docx', done:true,
-    thumb:'Persona en home office con pantalla mostrando videollamada con equipo americano (múltiples rostros en cuadrícula). Ventana al fondo con vista diferente a la del equipo, sugiriendo distancia geográfica. Elementos: Slack, Zoom, reloj con zonas horarias. Texto: "WORKING REMOTE" con bandera americana discreta. Subtexto: "With an American team". Fondo moderno y cálido.'
-  },
-  {
-    ep:25, cat:'relaciones',
-    title:'How to Make Friends as an Adult in English',
-    file:'EP25_Making_Friends.docx', done:true,
-    thumb:'Dos adultos en un café o parque, conversando con naturalidad, con una conexión genuina visible en sus expresiones. No es una escena de fiesta ni de niños — es el momento específico y difícil de la amistad adulta. Texto: "MAKING FRIENDS" en letras cálidas. Subtexto: "As an adult. In English." Colores cálidos: terracota, crema, verde salvia. Sensación de autenticidad.'
-  },
-  {
-    ep:26, cat:'relaciones',
-    title:'How to Say No Without Sounding Rude',
-    file:'EP26_Say_No.docx', done:true,
-    thumb:'Persona con postura tranquila y segura, levantando una mano con calma (no agresiva). Expresión amable pero firme. Fondo minimalista. La palabra "NO" en grande pero en colores cálidos, no agresivos — quizás en rosa o terracota. Subtexto: "Without sounding rude". Sensación de poder gentil. Podría incluir un bocadillo con "That doesn\'t work for me."'
-  },
-  {
-    ep:27, cat:'relaciones',
-    title:'First Date in English: What to Say and What to Avoid',
-    file:'EP27_First_Date.docx', done:true,
-    thumb:'Dos personas en un restaurante o café con ambiente íntimo y cálido. Expresiones de curiosidad y conexión genuina. Dos columnas visuales sutiles: ✅ cosas que funcionan vs ❌ cosas que no. Texto: "FIRST DATE" en letras elegantes y subtexto: "What to say. What to avoid." Colores cálidos de noche: bordeaux, dorado, crema. Romanticismo real, no exagerado.'
-  },
-  {
-    ep:28, cat:'relaciones',
-    title:'Apologizing in English: When Sorry Isn\'t Enough',
-    file:'EP28_Apologizing.docx', done:true,
-    thumb:'Persona mirando directamente a cámara con expresión genuina de remordimiento y responsabilidad. No dramático — honesto. Fondo neutro. La palabra "SORRY" visible pero con una flecha o texto indicando que hay más. Texto: "APOLOGIZING IN ENGLISH" y subtexto: "When sorry isn\'t enough". Colores profundos: azul pizarra, blanco, rojo oscuro. Tono humano y maduro.'
-  },
-  {
-    ep:29, cat:'relaciones',
-    title:'How to Comfort Someone in English When You Don\'t Know What to Say',
-    file:'EP29_Comforting.docx', done:true,
-    thumb:'Una mano posándose suavemente sobre el hombro de alguien que está en un momento difícil. Fondo suave y difuminado. Luz cálida. Sin caras visibles — solo la conexión humana del gesto. Texto: "WHEN YOU DON\'T KNOW WHAT TO SAY" en letras pequeñas y delicadas. Subtexto: "How to comfort someone in English". Colores: beige, azul suave, gris cálido. Mucha ternura.'
-  },
-  {
-    ep:30, cat:'relaciones',
-    title:'How to Introduce Yourself at a Party in English',
-    file:'EP30_Party_Introduction.docx', done:true,
-    thumb:'Ambiente de fiesta adulta: luces de fondo, gente conversando en grupos. En primer plano, persona con copa de vino en mano sonriendo con naturalidad, lista para iniciar conversación. Bocadillo con "I\'m [name], by the way". Texto: "AT A PARTY" en letras fun y vibrantes. Subtexto: "How to introduce yourself in English". Colores: morado, dorado, negro. Vibrante pero sofisticado.'
-  },
-  {
-    ep:31, cat:'relaciones',
-    title:'Ghosting, Breadcrumbing & Modern Dating — in English',
-    file:'EP31_Modern_Dating.docx', done:true,
-    thumb:'Teléfono con la pantalla mostrando mensajes sin respuesta (visto pero sin reply). Fantasma pequeño y cómico flotando sobre el teléfono. Miguitas de pan cayendo desde un mensaje. Fondo oscuro con tonos púrpura y azul neón — estética de dating app. Texto: "GHOSTING. BREADCRUMBING. MODERN DATING." Subtexto: "In English". Irónico, divertido, actual.'
-  },
-  {
-    ep:32, cat:'relaciones',
-    title:'How to Tell Someone You Like Them in English',
-    file:'EP32_Tell_Someone_You_Like_Them.docx', done:true,
-    thumb:'Persona mirando a alguien con esa expresión específica de interés romántico contenido — un poco nerviosa, un poco esperanzada. Fondo suave con destellos o bokeh. Bocadillo con "I really like you" o "I think I\'m falling for you". Espectro visual de sutil a directo representado con colores que van de azul suave a rojo. Texto: "I LIKE YOU" en letras grandes. Subtexto: "How to say it in English." Cálido y valiente.'
-  },
-  {
-    ep:33, cat:'viajes',
-    title:'New York Part 2: Real Street Interactions',
-    file:'EP33_New_York_Part2.docx', done:true,
-    thumb:'Calle de Manhattan en movimiento: multitud, taxis amarillos, edificios. En primer plano, persona navegando la ciudad con confianza — no como turista, sino como alguien que sabe moverse. Texto: "NEW YORK" en letras de neón o grafiti urbano. Subtexto: "Real street interactions". Fondo vibrante de la ciudad. Colores icónicos: amarillo taxi, gris acero, rojo ladrillo. Energía urbana pura.'
-  },
-  {
-    ep:34, cat:'viajes',
-    title:'Las Vegas: The English You Need on the Strip',
-    file:'EP34_Las_Vegas.docx', done:true,
-    thumb:'Strip de Las Vegas de noche con todas sus luces y letreros de neón. En primer plano, silueta de persona mirando las luces con expresión de asombro. Elementos icónicos: dados, fichas de casino, luces de espectáculo. Texto: "LAS VEGAS" en letras de neón brillante. Subtexto: "The English you need on the Strip". Colores: rosa neón, dorado, negro profundo. Espectacular y glamoroso.'
-  },
-  {
-    ep:35, cat:'viajes',
-    title:'Disney World in English: Navigating the Magic',
-    file:'EP35_Disney_World.docx', done:true,
-    thumb:'Castillo de Magic Kingdom al fondo (en silueta para evitar copyright específico) con fuegos artificiales. En primer plano, mapa del parque con rutas trazadas y anotaciones en inglés (Lightning Lane, wait time, rope drop). Persona adulta con app en el teléfono, lista para el día. Texto: "DISNEY WORLD" en letras mágicas. Subtexto: "Navigate it in English". Colores: azul cielo, dorado, blanco.'
-  },
-  {
-    ep:36, cat:'viajes',
-    title:'Airbnb English: Talking to Your Host Like a Pro',
-    file:'EP36_Airbnb.docx', done:true,
-    thumb:'Puerta de un apartamento acogedor abriéndose para revelar un interior cálido y bien decorado. Teléfono con conversación de chat visible (mensajes entre huésped y anfitrión). Llave o lockbox visible. Texto: "AIRBNB ENGLISH" en letras modernas. Subtexto: "Talk to your host like a pro". Colores: rojo Airbnb, blanco, madera natural. Sensación de viaje inteligente y cómodo.'
-  },
-  {
-    ep:37, cat:'viajes',
-    title:'Train Travel in the US: Real English on the Rails',
-    file:'EP37_Train_Travel.docx', done:true,
-    thumb:'Vista desde ventana de tren con paisaje americano pasando — montañas, campos, horizonte amplio. Interior del tren visible en primer plano: asiento cómodo, café, vista panorámica. Logo de Amtrak discreto o mencionado en texto. Texto: "TRAIN TRAVEL USA" en letras de estilo clásico ferroviario. Subtexto: "Real English on the rails". Colores: azul de Amtrak, dorado, verde paisaje.'
-  },
-  {
-    ep:38, cat:'viajes',
-    title:'Tipping, Taxes & Receipts: The Math Nobody Explains',
-    file:'EP38_Tipping_Taxes.docx', done:true,
-    thumb:'Recibo de restaurante americano en primer plano con los tres elementos claramente visibles: Subtotal, Tax, y Tip con sus números. Lapicero calculando el porcentaje. Expresión de persona finalmente entendiendo el sistema. Texto: "TIPPING. TAXES. RECEIPTS." en letras tipo recibo de caja registradora. Subtexto: "The math nobody explains". Colores: blanco papel, verde dólar, negro tinta.'
-  },
-  {
-    ep:39, cat:'opinion',
-    title:'Is Social Media Killing Real Conversation?',
-    file:'EP39_Social_Media_Conversation.docx', done:true,
-    thumb:'Dos personas sentadas juntas pero mirando sus teléfonos en lugar de hablarse. Contraste visual entre el globo de chat digital brillante en las pantallas y el vacío de conversación real entre ellos. Fondo de café o sala. Texto: "IS SOCIAL MEDIA KILLING REAL CONVERSATION?" en letras que parecen romperse. Colores: azul de pantalla vs. cálido humano. Visualmente impactante e irónico.'
-  },
-  {
-    ep:40, cat:'opinion',
-    title:'AI vs Human Connection: Are We Losing Something?',
-    file:'EP40_AI_Human_Connection.docx', done:true,
-    thumb:'Mano humana casi tocando una mano digital/de IA — estética tipo La Creación de Miguel Ángel pero con la mano de IA hecha de código o circuitos. Fondo oscuro con partículas de luz. Texto: "AI vs HUMAN CONNECTION" en letras que mezclan tipografía humana y digital. Subtexto: "Are we losing something?" Colores: azul eléctrico y rojo cálido. Poderoso y filosófico.'
-  },
-  {
-    ep:41, cat:'opinion',
-    title:'Is English Still the Language of the Future?',
-    file:'EP41_English_Future.docx', done:true,
-    thumb:'Globo terráqueo con líneas de conexión entre países, con el idioma inglés representado como la red principal pero con otras lenguas emergiendo. Fondo futurista. Texto: "THE LANGUAGE OF THE FUTURE?" con el globo como O de la palabra. Subtexto: "Is it still English?" Colores: azul profundo, dorado, blanco. Grandioso y reflexivo.'
-  },
-  {
-    ep:42, cat:'opinion',
-    title:'Does Your Accent Define You? Real Talk',
-    file:'EP42_Accent_Identity.docx', done:true,
-    thumb:'Boca hablando con ondas sonoras visibles saliendo. Las ondas forman palabras o siluetas de diferentes banderas o culturas. Expresión de orgullo y confianza. Texto: "YOUR ACCENT" en letras grandes y subtexto: "Does it define you?" en itálica. Colores vibrantes y multiculturales. Mensaje visual de que el acento es identidad, no defecto. Empoderador y directo.'
-  },
-  {
-    ep:43, cat:'opinion',
-    title:'Is It Rude to Speak Your Language Around People Who Don\'t Understand?',
-    file:'EP43_Speaking_Your_Language.docx', done:true,
-    thumb:'Grupo de personas en una reunión o mesa: algunos hablando en un idioma mientras uno mira con cara de excluido o confundido. La escena no juzga — simplemente muestra la tensión con honestidad. Bocadillos de idiomas diferentes. Texto: "IS IT RUDE?" en grande. Subtexto: "Speaking your language around others". Colores neutrales con toque de tensión. Reflexivo e inteligente.'
-  },
-  {
-    ep:44, cat:'opinion',
-    title:'Should Everyone Learn English? Honest Opinions',
-    file:'EP44_Should_Everyone_Learn_English.docx', done:true,
-    thumb:'Mapa del mundo con la palabra "ENGLISH?" superpuesta, con signos de interrogación en varios continentes. Fondo que mezcla el poder del inglés global con la riqueza de otros idiomas. Colores de diferentes banderas mezclados. Texto: "SHOULD EVERYONE LEARN ENGLISH?" en letras que reflejan la complejidad de la pregunta. Subtexto: "Honest opinions." Sin respuesta fácil — eso se refleja visualmente.'
-  },
-  {
-    ep:45, cat:'opinion',
-    title:'Is It Harder to Make Real Friends as an Adult?',
-    file:'EP45_Adult_Friendships.docx', done:true,
-    thumb:'Dos personas adultas (no niños) intentando conectar en un contexto cotidiano — café, parque, trabajo. La dificultad está sugerida por cierta distancia o vacilación visible. Fondo cálido pero melancólico. Texto: "MAKING FRIENDS AS AN ADULT" con las palabras "AS AN ADULT" destacadas en otro color. Subtexto: "Is it harder?" Colores: terracota, gris cálido, verde sage. Honesto y universal.'
-  },
-  {
-    ep:46, cat:'opinion',
-    title:'Would You Move to the US? Honest Pros and Cons',
-    file:'EP46_Move_To_US.docx', done:true,
-    thumb:'Maleta lista para viajar frente a un skyline americano icónico (New York, Chicago). A la izquierda: elementos positivos (oportunidad, dólar, libertad). A la derecha: elementos de duda (salud, soledad, costo). Balanza visual en el centro. Texto: "WOULD YOU MOVE TO THE US?" en grande. Subtexto: "Honest pros & cons." Colores de bandera americana con matices de realidad.'
-  },
-  {
-    ep:47, cat:'opinion',
-    title:'Do You Need a College Degree Anymore? Real Talk',
-    file:'EP47_College_Degree.docx', done:true,
-    thumb:'Diploma universitario con un signo de interrogación grande encima. A un lado: laptop con código y certificado online. La pregunta visual es obvia: ¿esto o esto? Fondo que mezcla el campus clásico americano con el mundo digital moderno. Texto: "DO YOU STILL NEED A DEGREE?" en letras que mezclan serif clásico y sans moderno. Subtexto: "Real talk." Colores: azul académico vs. naranja tech.'
-  },
-  {
-    ep:48, cat:'opinion',
-    title:'Is It Okay to Use AI to Help You Write in English?',
-    file:'EP48_AI_Writing.docx', done:true,
-    thumb:'Mano humana escribiendo y mano de IA (representada digitalmente) escribiendo lado a lado en el mismo teclado o papel. La imagen no juzga — muestra la colaboración y la pregunta. Texto: "AI + YOUR ENGLISH" en letras que mezclan escritura a mano y fuente digital. Subtexto: "Is it okay?" Colores: azul IA vs. tinta negra humana. Fondo blanco limpio. Inteligente y actual.'
-  },
-  {
-    ep:49, cat:'opinion',
-    title:'Has Social Media Made Us Better or Worse at English?',
-    file:'EP49_Social_Media_English.docx', done:true,
-    thumb:'Pantalla de teléfono partida por la mitad: lado izquierdo muestra vocabulario nuevo, slang, expresiones reales aprendidas por redes — colorido y dinámico. Lado derecho muestra texto sin puntuación, abreviaturas, degradación de la escritura formal — más oscuro. Texto: "BETTER or WORSE at English?" con cada palabra en el color correspondiente al lado. Subtexto: "Social media\'s real impact." Visualmente dividido y poderoso.'
-  },
-];
-
-// Load saved state
-const saved = JSON.parse(localStorage.getItem('rep_tracker_v3') || '{}');
-EPISODES.forEach(e => { if(saved[e.ep] !== undefined) e.done = saved[e.ep]; });
-
-let currentFilter = 'all';
-const openThumbs = new Set();
-
-function save() {
-  const obj = {};
-  EPISODES.forEach(e => obj[e.ep] = e.done);
-  localStorage.setItem('rep_tracker_v3', JSON.stringify(obj));
+async function toggleStep(epNum,step,event){
+  if(event)event.stopPropagation();
+  const ep=EPISODES.find(e=>e.ep===epNum);
+  if(!ep)return;
+  ep[step]=!ep[step];
+  await _upsertProgress(epNum);
+  renderAll();
 }
 
-function toggleDone(ep, event) {
-  event.stopPropagation();
-  const e = EPISODES.find(x => x.ep === ep);
-  if(e){ e.done = !e.done; save(); renderAll(); }
-}
-
-function toggleThumb(ep) {
-  if(openThumbs.has(ep)) openThumbs.delete(ep);
-  else openThumbs.add(ep);
+function togglePanel(epNum){
+  if(openPanels.has(epNum))openPanels.delete(epNum);
+  else openPanels.add(epNum);
   renderEpisodes();
 }
 
-function setFilter(f, btn) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+async function saveNotes(epNum){
+  const ep=EPISODES.find(e=>e.ep===epNum);
+  if(!ep)return;
+  const ta=document.getElementById('notes-'+epNum);
+  if(!ta)return;
+  ep.notes=ta.value;
+  await _upsertProgress(epNum);
+  const msg=document.getElementById('notes-msg-'+epNum);
+  if(msg){msg.style.opacity='1';setTimeout(()=>msg.style.opacity='0',1800);}
+}
+
+function setFilter(f,btn){
+  currentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderEpisodes();
 }
 
-function renderSummary() {
-  const grid = document.getElementById('summary-grid');
-  grid.innerHTML = '';
-  CATEGORIES.forEach(cat => {
-    const eps = EPISODES.filter(e => e.cat === cat.id);
-    const done = eps.filter(e => e.done).length;
-    const pct = Math.round(done/eps.length*100);
-    grid.innerHTML += `
+function epProgress(ep){return[ep.capcut,ep.portada,ep.miniatura,ep.youtube].filter(Boolean).length;}
+
+function renderStats(){
+  const published=EPISODES.filter(e=>e.youtube).length;
+  const total=EPISODES.length;
+  const pct=Math.round(published/total*100);
+  document.getElementById('stat-done').textContent=published;
+  document.getElementById('stat-total').textContent=total;
+  document.getElementById('pct').textContent=pct+'%';
+  document.getElementById('bar').style.width=pct+'%';
+}
+
+function renderSummary(){
+  const grid=document.getElementById('summary-grid');
+  grid.innerHTML='';
+  CATEGORIES.forEach(cat=>{
+    const eps=EPISODES.filter(e=>e.cat===cat.id);
+    const done=eps.filter(e=>e.youtube).length;
+    const pct=eps.length?Math.round(done/eps.length*100):0;
+    grid.innerHTML+=`
       <div class="summary-card">
-        <div class="cat-header">
-          <span>${cat.emoji}</span>
-          <span>${cat.name}</span>
-        </div>
+        <div class="cat-header"><span style="font-size:1.1rem">${cat.emoji}</span><span>${cat.name}</span></div>
         <div class="cat-bar"><div class="cat-fill" style="width:${pct}%;background:${cat.color}"></div></div>
-        <div class="cat-count">${done} / ${eps.length} episodios · ${pct}%</div>
+        <div class="cat-count">${done} / ${eps.length} publicados · ${pct}%</div>
       </div>`;
   });
 }
 
-function renderStats() {
-  const done = EPISODES.filter(e => e.done).length;
-  const total = EPISODES.length;
-  const pct = Math.round(done/total*100);
-  document.getElementById('stat-done').textContent = done;
-  document.getElementById('stat-total').textContent = total;
-  document.getElementById('pct').textContent = pct + '%';
-  document.getElementById('bar').style.width = pct + '%';
-}
-
-function renderEpisodes() {
-  const q = document.getElementById('search').value.toLowerCase();
-  const container = document.getElementById('episodes-container');
-  container.innerHTML = '';
-
-  CATEGORIES.forEach(cat => {
-    let eps = EPISODES.filter(e => e.cat === cat.id);
-    if(currentFilter === 'done') eps = eps.filter(e => e.done);
-    if(currentFilter === 'pending') eps = eps.filter(e => !e.done);
-    if(q) eps = eps.filter(e => e.title.toLowerCase().includes(q) || String(e.ep).includes(q) || e.thumb.toLowerCase().includes(q));
-    if(!eps.length) return;
-
-    const done = EPISODES.filter(e => e.cat === cat.id && e.done).length;
-    const total = EPISODES.filter(e => e.cat === cat.id).length;
-
-    let html = `<div class="section">
+function renderEpisodes(){
+  const q=(document.getElementById('search').value||'').toLowerCase();
+  const container=document.getElementById('episodes-container');
+  container.innerHTML='';
+  CATEGORIES.forEach(cat=>{
+    let eps=EPISODES.filter(e=>e.cat===cat.id);
+    if(currentFilter==='done')eps=eps.filter(e=>e.youtube);
+    if(currentFilter==='pending')eps=eps.filter(e=>!e.youtube);
+    if(q)eps=eps.filter(e=>e.title.toLowerCase().includes(q)||String(e.ep).includes(q)||e.thumb.toLowerCase().includes(q));
+    if(!eps.length)return;
+    const totalCat=EPISODES.filter(e=>e.cat===cat.id).length;
+    const doneCat=EPISODES.filter(e=>e.cat===cat.id&&e.youtube).length;
+    let html=`<div class="section">
       <div class="section-title">
         <span>${cat.emoji}</span> ${cat.name}
-        <span class="badge">✅ ${done}/${total}</span>
+        <span class="badge">▶ ${doneCat}/${totalCat} publicados</span>
       </div>`;
-
-    eps.forEach(e => {
-      const isOpen = openThumbs.has(e.ep);
-      html += `
-        <div class="ep-card ${e.done?'done':'pending'}">
+    eps.forEach(e=>{
+      const prog=epProgress(e);
+      const isOpen=openPanels.has(e.ep);
+      const cardClass=prog===4?'all-done':prog===0?'none-done':'partial';
+      const progClass=`p${prog}`;
+      html+=`
+        <div class="ep-card ${cardClass}">
           <div class="ep-main">
             <div class="ep-num">EP${String(e.ep).padStart(2,'0')}</div>
-            <div class="ep-status">${e.done ? '✅' : '⏳'}</div>
+            <div class="ep-progress ${progClass}">${prog}/4</div>
             <div class="ep-title">${e.title}</div>
             <div class="ep-file">${e.file}</div>
-            <button class="thumb-toggle ${isOpen?'open':''}" onclick="toggleThumb(${e.ep})">
-              🎨 ${isOpen ? 'Ocultar' : 'Portada'}
-            </button>
-            <button class="toggle-done" onclick="toggleDone(${e.ep}, event)">${e.done ? 'Hecho ✓' : 'Marcar'}</button>
+            <div class="ep-checks">
+              <button class="check-btn ${e.capcut?'active-capcut':''}" onclick="toggleStep(${e.ep},'capcut',event)">🎬 CapCut</button>
+              <button class="check-btn ${e.portada?'active-portada':''}" onclick="toggleStep(${e.ep},'portada',event)">🖼 Portada</button>
+              <button class="check-btn ${e.miniatura?'active-miniatura':''}" onclick="toggleStep(${e.ep},'miniatura',event)">🖼 Miniatura</button>
+              <button class="check-btn ${e.youtube?'active-youtube':''}" onclick="toggleStep(${e.ep},'youtube',event)">▶ YouTube</button>
+            </div>
+            <button class="panel-toggle ${isOpen?'open':''}" onclick="togglePanel(${e.ep})">${isOpen?'▲ Cerrar':'▼ Ver más'}</button>
           </div>
-          <div class="thumb-panel ${isOpen?'open':''}">
-            <div class="thumb-label">🎨 Descripción de portada YouTube</div>
-            <div class="thumb-desc">${e.thumb}</div>
+          <div class="ep-panel ${isOpen?'open':''}">
+            <div class="panel-row">
+              <div class="panel-col">
+                <div class="panel-label">🎨 Descripción de portada YouTube</div>
+                <div class="thumb-desc">${e.thumb}</div>
+              </div>
+              <div class="panel-col">
+                <div class="panel-label">📝 Notas del equipo</div>
+                <textarea class="notes-area" id="notes-${e.ep}" placeholder="Agrega notas, comentarios o indicaciones aquí...">${e.notes}</textarea>
+                <button class="notes-save" onclick="saveNotes(${e.ep})">Guardar nota</button>
+                <span class="notes-saved-msg" id="notes-msg-${e.ep}">✓ Guardado</span>
+              </div>
+            </div>
           </div>
         </div>`;
     });
-
-    html += '</div>';
-    container.innerHTML += html;
+    html+='</div>';
+    container.innerHTML+=html;
   });
 }
 
-function renderAll() {
-  renderStats();
-  renderSummary();
-  renderEpisodes();
-}
+function renderAll(){renderStats();renderSummary();renderEpisodes();}
 
-function exportMD() {
-  const total = EPISODES.length;
-  const done = EPISODES.filter(e => e.done).length;
-  let md = `# The Real English Podcast — Production Tracker\n\n`;
-  md += `**Completados:** ${done} / ${total}\n\n---\n\n`;
-
-  CATEGORIES.forEach(cat => {
-    const eps = EPISODES.filter(e => e.cat === cat.id);
-    const catDone = eps.filter(e => e.done).length;
-    const catObj = CATEGORIES.find(c => c.id === cat.id);
-    md += `## ${catObj.emoji} ${catObj.name} (${catDone}/${eps.length})\n\n`;
-    eps.forEach(e => {
-      md += `### [${e.done ? 'x' : ' '}] EP${String(e.ep).padStart(2,'0')} — ${e.title}\n`;
-      md += `- **Archivo:** \`${e.file}\`\n`;
-      md += `- **Portada YouTube:** ${e.thumb}\n\n`;
+function exportMD(){
+  const published=EPISODES.filter(e=>e.youtube).length;
+  let md=`# The Real English Podcast — Production Tracker\n\n`;
+  md+=`**Publicados en YouTube:** ${published} / ${EPISODES.length}\n\n---\n\n`;
+  CATEGORIES.forEach(cat=>{
+    const eps=EPISODES.filter(e=>e.cat===cat.id);
+    const catPub=eps.filter(e=>e.youtube).length;
+    const catObj=CATEGORIES.find(c=>c.id===cat.id);
+    md+=`## ${catObj.emoji} ${catObj.name} (${catPub}/${eps.length} publicados)\n\n`;
+    eps.forEach(e=>{
+      const steps=[e.capcut?'[x] CapCut':'[ ] CapCut',e.portada?'[x] Portada':'[ ] Portada',e.miniatura?'[x] Miniatura':'[ ] Miniatura',e.youtube?'[x] YouTube':'[ ] YouTube'].join(' | ');
+      md+=`### EP${String(e.ep).padStart(2,'0')} — ${e.title}\n`;
+      md+=`- **Progreso:** ${steps}\n`;
+      md+=`- **Archivo:** \`${e.file}\`\n`;
+      if(e.notes)md+=`- **Notas:** ${e.notes}\n`;
+      md+=`- **Portada YouTube:** ${e.thumb}\n\n`;
     });
   });
-
-  const blob = new Blob([md], {type:'text/markdown'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'REP_Production_Tracker_Portadas.md';
+  const blob=new Blob([md],{type:'text/markdown'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='REP_Production_Tracker.md';
   a.click();
 }
 
-
-
-
-
-
-// Inicialización async con Supabase
-async function _init() {
+async function _init(){
   renderAll();
-  const { data: { session } } = await _sb.auth.getSession();
-  if (session && session.user) {
-    onAuthSuccess(session.user);
-  }
-  _sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN' && session) {
-      onAuthSuccess(session.user);
-    } else if (event === 'SIGNED_OUT') {
-      _currentUser = null;
-    }
+  const{data:{session}}=await _sb.auth.getSession();
+  if(session&&session.user){onAuthSuccess(session.user);}
+  _sb.auth.onAuthStateChange((event,session)=>{
+    if(event==='SIGNED_IN'&&session)onAuthSuccess(session.user);
+    else if(event==='SIGNED_OUT'){_currentUser=null;}
   });
 }
 _init();
