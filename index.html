@@ -793,20 +793,7 @@ function exportMD() {
 
 
 
-// === Supabase hooks para toggleDone y toggleThumb ===
-const _origToggleDone = toggleDone;
-toggleDone = async function(ep, event) {
-  _origToggleDone(ep, event);
-  const epObj = EPISODES.find(e => e.ep === ep);
-  if (epObj) await _saveDone(ep, epObj.done);
-};
 
-const _origToggleThumb = toggleThumb;
-toggleThumb = async function(ep) {
-  _origToggleThumb(ep);
-  const isThumb = openThumbs.has(ep);
-  await _saveThumb(ep, isThumb);
-};
 
 
 // Inicialización async con Supabase
