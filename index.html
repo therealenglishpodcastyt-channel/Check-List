@@ -146,6 +146,7 @@
     .thumb-panel{padding-left:18px;}
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -182,6 +183,39 @@
 <footer>The Real English Podcast · Lau & San · ElevenLabs VO3.1 Fast · Martes y Jueves</footer>
 
 <script>
+
+// =========================================
+// === SUPABASE INTEGRATION ================
+// =========================================
+const SUPABASE_URL = 'https://xvmvbwrdcemeggbkxucz.supabase.co';
+const SUPABASE_KEY = 'TU_ANON_KEY_AQUI'; // << REEMPLAZA con tu anon key de Supabase Settings > API Keys > Legacy > anon public
+const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function loadFromSupabase() {
+  try {
+    const { data, error } = await _sb.from('episodios').select('id,is_done,has_thumb').order('id');
+    if (error) throw error;
+    data.forEach(ep => { state[ep.id] = { done: ep.is_done, thumb: ep.has_thumb }; });
+  } catch(err) {
+    console.warn('Supabase load failed, using localStorage:', err.message);
+    load();
+  }
+}
+
+async function _saveDone(id, val) {
+  try {
+    await _sb.from('episodios').update({is_done: val, updated_at: new Date().toISOString()}).eq('id', id);
+  } catch(err) { console.warn('Supabase update failed:', err.message); save(); }
+}
+
+async function _saveThumb(id, val) {
+  try {
+    await _sb.from('episodios').update({has_thumb: val, updated_at: new Date().toISOString()}).eq('id', id);
+  } catch(err) { console.warn('Supabase update failed:', err.message); save(); }
+}
+// =========================================
+
+
 const CATEGORIES = [
   { id:'emergencia', emoji:'😱', name:'Emergencia o Tensión',          color:'#e74c3c' },
   { id:'cultura',    emoji:'🌍', name:'Cultura Americana',              color:'#e67e22' },
@@ -627,7 +661,28 @@ function exportMD() {
   a.click();
 }
 
-renderAll();
+
+
+// === Supabase hooks para toggleDone y toggleThumb ===
+const _origToggleDone = toggleDone;
+toggleDone = async function(id, event) {
+  _origToggleDone(id, event);
+  if (state[id]) await _saveDone(id, state[id].done);
+};
+
+const _origToggleThumb = toggleThumb;
+toggleThumb = async function(id) {
+  _origToggleThumb(id);
+  if (state[id]) await _saveThumb(id, state[id].thumb);
+};
+
+
+// Inicialización async con Supabase
+async function _init() {
+  await loadFromSupabase();
+  renderAll();
+}
+_init();
 </script>
 </body>
 </html>
