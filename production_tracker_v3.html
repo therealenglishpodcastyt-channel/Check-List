@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE REAL ENGLISH PODCAST — Production Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0e0e0e; --surface:#161616; --card:#1e1e1e; --border:#2a2a2a;
+    --accent:#C0392B; --accent2:#e74c3c; --yellow:#f5c518;
+    --text:#f0f0f0; --muted:#888;
+    --done:#1a2e1a; --done-b:#4caf50;
+    --pending:#1a1a2e; --pending-b:#5555cc;
+    --thumb-bg:#1a1215; --thumb-b:#3a2020;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+  header{
+    background:var(--surface);border-bottom:3px solid var(--accent);
+    padding:18px 28px;position:sticky;top:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  }
+  .header-left h1{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;color:var(--accent);line-height:1;}
+  .header-left p{font-size:0.68rem;color:var(--muted);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase;}
+
+  .stats{display:flex;gap:22px;align-items:center;flex-wrap:wrap;}
+  .stat{text-align:center;}
+  .stat .n{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;}
+  .stat .l{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+  .n.green{color:var(--done-b);}
+  .n.yellow{color:var(--yellow);}
+  .n.gray{color:var(--muted);}
+
+  .bar-wrap{width:180px;}
+  .bar-top{display:flex;justify-content:space-between;font-size:0.68rem;color:var(--muted);margin-bottom:4px;}
+  .bar{height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--done-b));border-radius:99px;transition:width .4s;}
+
+  .export-btn{
+    background:var(--accent);color:#fff;border:none;padding:10px 20px;
+    border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;
+    cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;white-space:nowrap;
+  }
+  .export-btn:hover{background:var(--accent2);transform:translateY(-1px);}
+
+  .main{max-width:980px;margin:0 auto;padding:28px 22px;}
+
+  .summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:32px;}
+  .summary-card{
+    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:16px 18px;display:flex;flex-direction:column;gap:8px;
+  }
+  .summary-card .cat-header{display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.88rem;}
+  .summary-card .cat-bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:4px;}
+  .summary-card .cat-fill{height:100%;border-radius:99px;}
+  .summary-card .cat-count{font-size:0.72rem;color:var(--muted);margin-top:2px;}
+
+  .section{margin-bottom:32px;}
+  .section-title{
+    font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;
+    color:var(--accent);border-bottom:1px solid var(--border);
+    padding-bottom:8px;margin-bottom:14px;display:flex;align-items:center;gap:10px;
+  }
+  .section-title .badge{
+    font-family:'DM Sans',sans-serif;font-size:0.68rem;font-weight:600;
+    background:var(--done);color:var(--done-b);border:1px solid var(--done-b);
+    padding:2px 8px;border-radius:99px;letter-spacing:0.5px;margin-left:auto;
+  }
+
+  /* Episode card */
+  .ep-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:10px;margin-bottom:10px;overflow:hidden;
+    transition:border-color .18s;
+  }
+  .ep-card:hover{border-color:var(--accent);}
+  .ep-card.done{border-left:3px solid var(--done-b);}
+  .ep-card.pending{border-left:3px solid var(--pending-b);}
+
+  .ep-main{
+    display:flex;align-items:center;gap:12px;
+    padding:11px 16px;cursor:pointer;
+  }
+  .ep-num{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;color:var(--muted);min-width:38px;text-align:center;}
+  .ep-status{font-size:1rem;min-width:20px;}
+  .ep-title{flex:1;font-size:0.87rem;font-weight:500;line-height:1.35;}
+  .ep-file{font-size:0.68rem;color:var(--muted);font-family:monospace;white-space:nowrap;}
+
+  .toggle-done{
+    background:none;border:1px solid var(--border);color:var(--muted);
+    padding:4px 10px;border-radius:6px;font-size:0.72rem;cursor:pointer;
+    transition:all .18s;white-space:nowrap;flex-shrink:0;
+  }
+  .toggle-done:hover{border-color:var(--done-b);color:var(--done-b);}
+  .ep-card.done .toggle-done{border-color:var(--done-b);color:var(--done-b);}
+
+  .thumb-toggle{
+    background:none;border:none;color:var(--muted);
+    padding:4px 8px;border-radius:6px;font-size:0.72rem;cursor:pointer;
+    transition:all .18s;display:flex;align-items:center;gap:4px;flex-shrink:0;
+  }
+  .thumb-toggle:hover{color:var(--yellow);}
+  .thumb-toggle.open{color:var(--yellow);}
+
+  .thumb-panel{
+    display:none;border-top:1px solid var(--border);
+    background:var(--thumb-bg);padding:14px 18px 16px 68px;
+  }
+  .thumb-panel.open{display:block;}
+  .thumb-label{
+    font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--accent);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;
+  }
+  .thumb-desc{
+    font-size:0.83rem;color:#ccc;line-height:1.65;
+    border-left:2px solid var(--accent);padding-left:12px;
+  }
+
+  .filter-bar{
+    display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;align-items:center;
+  }
+  .filter-btn{
+    background:var(--card);border:1px solid var(--border);color:var(--muted);
+    padding:6px 14px;border-radius:99px;font-size:0.78rem;cursor:pointer;transition:all .18s;
+  }
+  .filter-btn:hover,.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .filter-label{font-size:0.72rem;color:var(--muted);margin-right:4px;}
+
+  .search-box{
+    background:var(--card);border:1px solid var(--border);color:var(--text);
+    padding:7px 14px;border-radius:8px;font-size:0.82rem;width:220px;
+    outline:none;transition:border .18s;
+  }
+  .search-box:focus{border-color:var(--accent);}
+  .search-box::placeholder{color:var(--muted);}
+
+  footer{text-align:center;padding:30px;color:var(--muted);font-size:0.72rem;border-top:1px solid var(--border);margin-top:20px;}
+
+  @media(max-width:600px){
+    .ep-file{display:none;}
+    .stats{gap:14px;}
+    header{padding:14px 16px;}
+    .main{padding:18px 14px;}
+    .thumb-panel{padding-left:18px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>🎙 THE REAL ENGLISH PODCAST</h1>
+    <p>Production Tracker + Portadas YouTube</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="n green" id="stat-done">49</div><div class="l">Completados</div></div>
+    <div class="stat"><div class="n gray" id="stat-total">49</div><div class="l">Total</div></div>
+    <div class="bar-wrap">
+      <div class="bar-top"><span>Progreso</span><span id="pct">100%</span></div>
+      <div class="bar"><div class="bar-fill" id="bar" style="width:100%"></div></div>
+    </div>
+    <button class="export-btn" onclick="exportMD()">⬇ Exportar .md</button>
+  </div>
+</header>
+
+<div class="main">
+  <div class="summary-grid" id="summary-grid"></div>
+
+  <div class="filter-bar">
+    <span class="filter-label">Filtrar:</span>
+    <button class="filter-btn active" onclick="setFilter('all',this)">Todos</button>
+    <button class="filter-btn" onclick="setFilter('done',this)">✅ Completados</button>
+    <button class="filter-btn" onclick="setFilter('pending',this)">⏳ Pendientes</button>
+    <input class="search-box" id="search" placeholder="🔍 Buscar episodio..." oninput="renderEpisodes()">
+  </div>
+
+  <div id="episodes-container"></div>
+</div>
+
+<footer>The Real English Podcast · Lau & San · ElevenLabs VO3.1 Fast · Martes y Jueves</footer>
+
+<script>
+const CATEGORIES = [
+  { id:'emergencia', emoji:'😱', name:'Emergencia o Tensión',          color:'#e74c3c' },
+  { id:'cultura',    emoji:'🌍', name:'Cultura Americana',              color:'#e67e22' },
+  { id:'dinero',     emoji:'💰', name:'Dinero, Trabajo y Vida Real',    color:'#f1c40f' },
+  { id:'relaciones', emoji:'❤️', name:'Relaciones, Amistad y Social',   color:'#e91e8c' },
+  { id:'viajes',     emoji:'✈️', name:'Viajes y Aventuras',             color:'#3498db' },
+  { id:'opinion',    emoji:'🔥', name:'Temas que Generan Opinión',      color:'#9b59b6' },
+];
+
+const EPISODES = [
+  {
+    ep:1, cat:'emergencia',
+    title:'Pulled Over Part 2: We Got a Ticket This Time',
+    file:'EP01_Pulled_Over_Part2.docx', done:true,
+    thumb:'Fondo oscuro de noche en una carretera americana. Un carro detenido al lado de la vía con las luces de una patrulla azul y roja reflejadas sobre el capó. En primer plano, texto grande en blanco: "WE GOT A TICKET" y debajo en rojo: "Part 2". Pequeño ícono de un policía con linterna al costado. Ambiente de tensión nocturna.'
+  },
+  {
+    ep:2, cat:'emergencia',
+    title:'We Got Scammed as Tourists',
+    file:'EP02_Scammed_Tourists.docx', done:true,
+    thumb:'Fondo de una calle turística concurrida (puede ser Times Square o similar). Dos figuras de turistas con maletas y cara de confusión o shock. Billete de dólar rasgado o con una X encima. Texto grande: "WE GOT SCAMMED" en rojo con efecto de alerta. Subtexto pequeño: "Real English for real emergencies".'
+  },
+  {
+    ep:3, cat:'emergencia',
+    title:'Flight Cancelled: Surviving the Gate in English',
+    file:'EP03_Flight_Cancelled.docx', done:true,
+    thumb:'Interior de aeropuerto con pantalla de salidas mostrando "CANCELLED" en rojo junto a varios vuelos. Persona de espaldas con maleta mirando la pantalla. Expresión de caos organizado. Texto superpuesto: "FLIGHT CANCELLED" en grande y debajo: "How to survive the gate in English". Colores azul aeropuerto y rojo de alerta.'
+  },
+  {
+    ep:4, cat:'emergencia',
+    title:'We Missed Our Bus in the Middle of Nowhere',
+    file:'EP04_Missed_Bus.docx', done:true,
+    thumb:'Carretera americana vacía al atardecer, horizonte plano, sin edificios a la vista. Un bus alejándose al fondo, dejando una nube de polvo. Persona de pie con mochila en la carretera mirando el bus irse. Texto: "MISSED THE BUS" en amarillo oscuro y debajo: "In the middle of nowhere". Sensación de aislamiento pero con humor.'
+  },
+  {
+    ep:5, cat:'cultura',
+    title:'Why Americans Are So Friendly But Hard to Actually Know',
+    file:'EP05_Americans_Friendly.docx', done:true,
+    thumb:'Dos personas sonriendo ampliamente y saludando, típico estilo americano. Pero detrás de esas caras sonrientes, una pared de vidrio o espejo que separa. Texto: "SO FRIENDLY" en verde brillante y debajo: "But so hard to know" en gris. Contraste visual entre la calidez superficial y la distancia real. Fondo con ambiente de barrio suburbano americano.'
+  },
+  {
+    ep:6, cat:'cultura',
+    title:'Small Talk: The American Skill Nobody Teaches You',
+    file:'EP06_Small_Talk.docx', done:true,
+    thumb:'Dos personas en un ascensor o sala de espera, conversando con bocadillos de diálogo que dicen cosas como "Nice weather!", "How about those [team]s?". Expresión de naturalidad americana. Texto principal: "SMALL TALK" en letras grandes y debajo: "The skill nobody teaches you". Fondo neutro tipo oficina o lobby americano.'
+  },
+  {
+    ep:7, cat:'cultura',
+    title:'American Sarcasm: When They\'re Joking and You Don\'t Know It',
+    file:'EP07_American_Sarcasm.docx', done:true,
+    thumb:'Una persona con expresión seria diciendo algo con un bocadillo de texto que tiene comillas grandes ("Oh sure, that\'s GREAT"). Otra persona al lado con cara de confusión total, con un signo de interrogación flotando. Texto: "AMERICAN SARCASM" con letras entrecomilladas o en itálica. Fondo colorido y dinámico. Sensación de malentendido cómico.'
+  },
+  {
+    ep:8, cat:'cultura',
+    title:'Sports Culture in the US: What You Need to Know',
+    file:'EP08_Sports_Culture.docx', done:true,
+    thumb:'Collage de elementos deportivos americanos: casco de fútbol americano, pelota de basketball, hot dog, vaso de cerveza, bandera americana con colores de equipo. Estadio lleno de fondo difuminado. Texto: "SPORTS CULTURE" en letras estilo jersey deportivo. Subtexto: "What you NEED to know". Colores rojos, azules y dorados.'
+  },
+  {
+    ep:9, cat:'cultura',
+    title:'Why "I\'m Fine" Doesn\'t Always Mean Fine',
+    file:'EP09_Im_Fine.docx', done:true,
+    thumb:'Persona con una sonrisa forzada y pulgar arriba, pero detrás de ella sombras o elementos que sugieren todo lo contrario (caos, preocupación). Texto gigante entre comillas: "I\'M FINE" con un subtexto pequeño: "...or is it?". La ironía visual es clave. Colores pasteles con un toque oscuro. Estética americana cotidiana.'
+  },
+  {
+    ep:10, cat:'cultura',
+    title:'The Unwritten Rules of American Bathrooms and Public Spaces',
+    file:'EP10_Unwritten_Rules.docx', done:true,
+    thumb:'Íconos simples y limpios: baño público, persona respetando espacio personal en fila, señales de etiqueta no escritas. Estética de manual o guía visual con fondo blanco o crema. Texto: "UNWRITTEN RULES" en rojo y subtexto: "American public spaces". Pequeños íconos de prohibición o check marks junto a comportamientos. Tono informativo y divertido.'
+  },
+  {
+    ep:11, cat:'cultura',
+    title:'Why Americans Talk About the Weather All the Time',
+    file:'EP11_Weather_Talk.docx', done:true,
+    thumb:'Persona americana conversando con nubes, sol, lluvia y nieve a su alrededor como decorado. Bocadillos de diálogo con frases como "Crazy weather, huh?" y "Can you believe this heat?". Fondo soleado y neutro. Texto: "THE WEATHER" en grande con nubes decorativas. Subtexto: "Why Americans can\'t stop talking about it". Tono amigable y curioso.'
+  },
+  {
+    ep:12, cat:'cultura',
+    title:'College Culture in the US: What Movies Don\'t Tell You',
+    file:'EP12_College_Culture.docx', done:true,
+    thumb:'Campus universitario americano de fondo con hojas otoñales. En primer plano, una pantalla de cine o televisión mostrando la versión Hollywood de la universidad (fiesta, toga) tachada con una X. Al lado, la versión real: estudiante con laptop y café, agotado pero sonriente. Texto: "COLLEGE CULTURE" y subtexto: "What movies don\'t tell you".'
+  },
+  {
+    ep:13, cat:'dinero',
+    title:'Job Interview English That Actually Gets You Hired',
+    file:'EP13_Job_Interview.docx', done:true,
+    thumb:'Persona bien vestida en entrevista de trabajo, confiada y sonriente. Al fondo, oficina moderna americana. Elementos visuales: un check mark verde grande sobre su cabeza indicando éxito. Texto: "JOB INTERVIEW" en letras corporativas y subtexto: "English that actually gets you hired". Colores azul corporativo y verde de éxito. Sensación de confianza y profesionalismo.'
+  },
+  {
+    ep:14, cat:'dinero',
+    title:'How to Ask for a Raise Without Sounding Desperate',
+    file:'EP14_Ask_For_Raise.docx', done:true,
+    thumb:'Persona parada frente a su jefe (de espaldas) en una oficina, con postura segura. Billetes de dólar o signo de $ visible pero discreto. Globo de diálogo con texto como "I\'d like to discuss my compensation". Expresión de calma y confianza. Texto: "ASK FOR A RAISE" en verde y subtexto: "Without sounding desperate". Ambiente de oficina americana moderna.'
+  },
+  {
+    ep:15, cat:'dinero',
+    title:'Renting Your First Apartment in the US',
+    file:'EP15_Renting_Apartment.docx', done:true,
+    thumb:'Puerta de apartamento americano con llaves en la cerradura. Fondo de calle urbana americana con edificios de ladrillo. Persona con caja de mudanza sonriendo. Elementos: contrato de arrendamiento, llave, signo de dólar discreto. Texto: "RENTING AN APARTMENT" en letras limpias y subtexto: "Your first place in the US". Colores cálidos de hogar.'
+  },
+  {
+    ep:16, cat:'dinero',
+    title:'Salary Negotiation: Real Phrases That Work',
+    file:'EP16_Salary_Negotiation.docx', done:true,
+    thumb:'Dos personas en una mesa de negociación, ambas con posturas de confianza. Gráfica de barras subiendo al fondo. Elementos: contrato, lapicero, signo de dólar. Texto: "SALARY NEGOTIATION" en letras fuertes y doradas. Subtexto: "Real phrases that actually work". Fondo oscuro con acentos dorados. Sensación de poder y profesionalismo.'
+  },
+  {
+    ep:17, cat:'dinero',
+    title:'How to Call in Sick in English Without Sounding Fake',
+    file:'EP17_Call_In_Sick.docx', done:true,
+    thumb:'Persona en cama con manta, termómetro en mano, mirando el teléfono con expresión de dudosa pero honesta. Fondo de habitación cálida y acogedora. Bocadillo de teléfono con texto: "Hey, I\'m not feeling well today...". Texto: "CALLING IN SICK" en letras cómodas y subtexto: "How to sound natural (not fake)". Colores cálidos: beige, rojo suave.'
+  },
+  {
+    ep:18, cat:'dinero',
+    title:'How to Write a Professional Email in Real English',
+    file:'EP18_Professional_Email.docx', done:true,
+    thumb:'Pantalla de computadora con un email abierto, limpio y profesional. Cursor sobre el botón "Send". Decorado con íconos de check marks sobre párrafos bien escritos. Texto: "PROFESSIONAL EMAIL" en fuente sans-serif limpia. Subtexto: "Real English that gets replies". Fondo azul oscuro con detalles blancos. Estética tech y moderna.'
+  },
+  {
+    ep:19, cat:'dinero',
+    title:'How to Quit Your Job Professionally in English',
+    file:'EP19_Quit_Job.docx', done:true,
+    thumb:'Persona caminando hacia una puerta de salida con maletín, mirando hacia atrás con una sonrisa tranquila y segura. Oficina de fondo. Puerta con letras que dicen "EXIT" pero sin drama. Texto: "QUITTING YOUR JOB" en letras grandes y subtexto: "How to leave professionally". Colores neutros con un toque de libertad — cielo azul por la ventana.'
+  },
+  {
+    ep:20, cat:'dinero',
+    title:'Health Insurance in the US: The Vocabulary You Need',
+    file:'EP20_Health_Insurance.docx', done:true,
+    thumb:'Fondo de consultorio médico americano. En primer plano, tarjeta de seguro médico con texto en inglés (deductible, copay, premium). Expresión de confusión transformándose en comprensión. Íconos médicos simples. Texto: "HEALTH INSURANCE" en letras claras y subtexto: "The vocabulary that saves you money". Colores azul médico y blanco. Tono serio pero accesible.'
+  },
+  {
+    ep:21, cat:'dinero',
+    title:'How to Complain at Work Without Getting Fired',
+    file:'EP21_Complain_Work.docx', done:true,
+    thumb:'Persona en oficina con expresión de calma estratégica, hablando con su jefe. Al fondo, otros empleados. Globo de diálogo con "I\'d like to raise a concern...". Una señal de peligro (FIRED) tachada con una X. Texto: "COMPLAIN AT WORK" en rojo y subtexto: "Without getting fired". Fondo de oficina moderna. Tono de astucia profesional.'
+  },
+  {
+    ep:22, cat:'dinero',
+    title:'Freelancing in English: Talking to American Clients',
+    file:'EP22_Freelancing.docx', done:true,
+    thumb:'Freelancer trabajando desde casa o café, laptop abierta, videollamada con cliente americano en pantalla. Mapa del mundo de fondo con conexiones entre países. Elementos: factura, dólar, laptop. Texto: "FREELANCING IN ENGLISH" en letras modernas. Subtexto: "Talking to American clients". Colores vibrantes: naranja y azul oscuro. Sensación de libertad laboral global.'
+  },
+  {
+    ep:23, cat:'dinero',
+    title:'How to Ask for a Recommendation Letter in English',
+    file:'EP23_Recommendation_Letter.docx', done:true,
+    thumb:'Carta formal elegante con sobre abierto, sello oficial discreto. Una persona entregando la carta con una sonrisa cálida y profesional. Fondo de biblioteca o campus universitario. Texto: "RECOMMENDATION LETTER" en letras clásicas y subtexto: "How to ask for one in English". Colores: azul marino, crema, dorado. Ambiente académico y profesional.'
+  },
+  {
+    ep:24, cat:'dinero',
+    title:'Working From Home With an American Team',
+    file:'EP24_WFH_American_Team.docx', done:true,
+    thumb:'Persona en home office con pantalla mostrando videollamada con equipo americano (múltiples rostros en cuadrícula). Ventana al fondo con vista diferente a la del equipo, sugiriendo distancia geográfica. Elementos: Slack, Zoom, reloj con zonas horarias. Texto: "WORKING REMOTE" con bandera americana discreta. Subtexto: "With an American team". Fondo moderno y cálido.'
+  },
+  {
+    ep:25, cat:'relaciones',
+    title:'How to Make Friends as an Adult in English',
+    file:'EP25_Making_Friends.docx', done:true,
+    thumb:'Dos adultos en un café o parque, conversando con naturalidad, con una conexión genuina visible en sus expresiones. No es una escena de fiesta ni de niños — es el momento específico y difícil de la amistad adulta. Texto: "MAKING FRIENDS" en letras cálidas. Subtexto: "As an adult. In English." Colores cálidos: terracota, crema, verde salvia. Sensación de autenticidad.'
+  },
+  {
+    ep:26, cat:'relaciones',
+    title:'How to Say No Without Sounding Rude',
+    file:'EP26_Say_No.docx', done:true,
+    thumb:'Persona con postura tranquila y segura, levantando una mano con calma (no agresiva). Expresión amable pero firme. Fondo minimalista. La palabra "NO" en grande pero en colores cálidos, no agresivos — quizás en rosa o terracota. Subtexto: "Without sounding rude". Sensación de poder gentil. Podría incluir un bocadillo con "That doesn\'t work for me."'
+  },
+  {
+    ep:27, cat:'relaciones',
+    title:'First Date in English: What to Say and What to Avoid',
+    file:'EP27_First_Date.docx', done:true,
+    thumb:'Dos personas en un restaurante o café con ambiente íntimo y cálido. Expresiones de curiosidad y conexión genuina. Dos columnas visuales sutiles: ✅ cosas que funcionan vs ❌ cosas que no. Texto: "FIRST DATE" en letras elegantes y subtexto: "What to say. What to avoid." Colores cálidos de noche: bordeaux, dorado, crema. Romanticismo real, no exagerado.'
+  },
+  {
+    ep:28, cat:'relaciones',
+    title:'Apologizing in English: When Sorry Isn\'t Enough',
+    file:'EP28_Apologizing.docx', done:true,
+    thumb:'Persona mirando directamente a cámara con expresión genuina de remordimiento y responsabilidad. No dramático — honesto. Fondo neutro. La palabra "SORRY" visible pero con una flecha o texto indicando que hay más. Texto: "APOLOGIZING IN ENGLISH" y subtexto: "When sorry isn\'t enough". Colores profundos: azul pizarra, blanco, rojo oscuro. Tono humano y maduro.'
+  },
+  {
+    ep:29, cat:'relaciones',
+    title:'How to Comfort Someone in English When You Don\'t Know What to Say',
+    file:'EP29_Comforting.docx', done:true,
+    thumb:'Una mano posándose suavemente sobre el hombro de alguien que está en un momento difícil. Fondo suave y difuminado. Luz cálida. Sin caras visibles — solo la conexión humana del gesto. Texto: "WHEN YOU DON\'T KNOW WHAT TO SAY" en letras pequeñas y delicadas. Subtexto: "How to comfort someone in English". Colores: beige, azul suave, gris cálido. Mucha ternura.'
+  },
+  {
+    ep:30, cat:'relaciones',
+    title:'How to Introduce Yourself at a Party in English',
+    file:'EP30_Party_Introduction.docx', done:true,
+    thumb:'Ambiente de fiesta adulta: luces de fondo, gente conversando en grupos. En primer plano, persona con copa de vino en mano sonriendo con naturalidad, lista para iniciar conversación. Bocadillo con "I\'m [name], by the way". Texto: "AT A PARTY" en letras fun y vibrantes. Subtexto: "How to introduce yourself in English". Colores: morado, dorado, negro. Vibrante pero sofisticado.'
+  },
+  {
+    ep:31, cat:'relaciones',
+    title:'Ghosting, Breadcrumbing & Modern Dating — in English',
+    file:'EP31_Modern_Dating.docx', done:true,
+    thumb:'Teléfono con la pantalla mostrando mensajes sin respuesta (visto pero sin reply). Fantasma pequeño y cómico flotando sobre el teléfono. Miguitas de pan cayendo desde un mensaje. Fondo oscuro con tonos púrpura y azul neón — estética de dating app. Texto: "GHOSTING. BREADCRUMBING. MODERN DATING." Subtexto: "In English". Irónico, divertido, actual.'
+  },
+  {
+    ep:32, cat:'relaciones',
+    title:'How to Tell Someone You Like Them in English',
+    file:'EP32_Tell_Someone_You_Like_Them.docx', done:true,
+    thumb:'Persona mirando a alguien con esa expresión específica de interés romántico contenido — un poco nerviosa, un poco esperanzada. Fondo suave con destellos o bokeh. Bocadillo con "I really like you" o "I think I\'m falling for you". Espectro visual de sutil a directo representado con colores que van de azul suave a rojo. Texto: "I LIKE YOU" en letras grandes. Subtexto: "How to say it in English." Cálido y valiente.'
+  },
+  {
+    ep:33, cat:'viajes',
+    title:'New York Part 2: Real Street Interactions',
+    file:'EP33_New_York_Part2.docx', done:true,
+    thumb:'Calle de Manhattan en movimiento: multitud, taxis amarillos, edificios. En primer plano, persona navegando la ciudad con confianza — no como turista, sino como alguien que sabe moverse. Texto: "NEW YORK" en letras de neón o grafiti urbano. Subtexto: "Real street interactions". Fondo vibrante de la ciudad. Colores icónicos: amarillo taxi, gris acero, rojo ladrillo. Energía urbana pura.'
+  },
+  {
+    ep:34, cat:'viajes',
+    title:'Las Vegas: The English You Need on the Strip',
+    file:'EP34_Las_Vegas.docx', done:true,
+    thumb:'Strip de Las Vegas de noche con todas sus luces y letreros de neón. En primer plano, silueta de persona mirando las luces con expresión de asombro. Elementos icónicos: dados, fichas de casino, luces de espectáculo. Texto: "LAS VEGAS" en letras de neón brillante. Subtexto: "The English you need on the Strip". Colores: rosa neón, dorado, negro profundo. Espectacular y glamoroso.'
+  },
+  {
+    ep:35, cat:'viajes',
+    title:'Disney World in English: Navigating the Magic',
+    file:'EP35_Disney_World.docx', done:true,
+    thumb:'Castillo de Magic Kingdom al fondo (en silueta para evitar copyright específico) con fuegos artificiales. En primer plano, mapa del parque con rutas trazadas y anotaciones en inglés (Lightning Lane, wait time, rope drop). Persona adulta con app en el teléfono, lista para el día. Texto: "DISNEY WORLD" en letras mágicas. Subtexto: "Navigate it in English". Colores: azul cielo, dorado, blanco.'
+  },
+  {
+    ep:36, cat:'viajes',
+    title:'Airbnb English: Talking to Your Host Like a Pro',
+    file:'EP36_Airbnb.docx', done:true,
+    thumb:'Puerta de un apartamento acogedor abriéndose para revelar un interior cálido y bien decorado. Teléfono con conversación de chat visible (mensajes entre huésped y anfitrión). Llave o lockbox visible. Texto: "AIRBNB ENGLISH" en letras modernas. Subtexto: "Talk to your host like a pro". Colores: rojo Airbnb, blanco, madera natural. Sensación de viaje inteligente y cómodo.'
+  },
+  {
+    ep:37, cat:'viajes',
+    title:'Train Travel in the US: Real English on the Rails',
+    file:'EP37_Train_Travel.docx', done:true,
+    thumb:'Vista desde ventana de tren con paisaje americano pasando — montañas, campos, horizonte amplio. Interior del tren visible en primer plano: asiento cómodo, café, vista panorámica. Logo de Amtrak discreto o mencionado en texto. Texto: "TRAIN TRAVEL USA" en letras de estilo clásico ferroviario. Subtexto: "Real English on the rails". Colores: azul de Amtrak, dorado, verde paisaje.'
+  },
+  {
+    ep:38, cat:'viajes',
+    title:'Tipping, Taxes & Receipts: The Math Nobody Explains',
+    file:'EP38_Tipping_Taxes.docx', done:true,
+    thumb:'Recibo de restaurante americano en primer plano con los tres elementos claramente visibles: Subtotal, Tax, y Tip con sus números. Lapicero calculando el porcentaje. Expresión de persona finalmente entendiendo el sistema. Texto: "TIPPING. TAXES. RECEIPTS." en letras tipo recibo de caja registradora. Subtexto: "The math nobody explains". Colores: blanco papel, verde dólar, negro tinta.'
+  },
+  {
+    ep:39, cat:'opinion',
+    title:'Is Social Media Killing Real Conversation?',
+    file:'EP39_Social_Media_Conversation.docx', done:true,
+    thumb:'Dos personas sentadas juntas pero mirando sus teléfonos en lugar de hablarse. Contraste visual entre el globo de chat digital brillante en las pantallas y el vacío de conversación real entre ellos. Fondo de café o sala. Texto: "IS SOCIAL MEDIA KILLING REAL CONVERSATION?" en letras que parecen romperse. Colores: azul de pantalla vs. cálido humano. Visualmente impactante e irónico.'
+  },
+  {
+    ep:40, cat:'opinion',
+    title:'AI vs Human Connection: Are We Losing Something?',
+    file:'EP40_AI_Human_Connection.docx', done:true,
+    thumb:'Mano humana casi tocando una mano digital/de IA — estética tipo La Creación de Miguel Ángel pero con la mano de IA hecha de código o circuitos. Fondo oscuro con partículas de luz. Texto: "AI vs HUMAN CONNECTION" en letras que mezclan tipografía humana y digital. Subtexto: "Are we losing something?" Colores: azul eléctrico y rojo cálido. Poderoso y filosófico.'
+  },
+  {
+    ep:41, cat:'opinion',
+    title:'Is English Still the Language of the Future?',
+    file:'EP41_English_Future.docx', done:true,
+    thumb:'Globo terráqueo con líneas de conexión entre países, con el idioma inglés representado como la red principal pero con otras lenguas emergiendo. Fondo futurista. Texto: "THE LANGUAGE OF THE FUTURE?" con el globo como O de la palabra. Subtexto: "Is it still English?" Colores: azul profundo, dorado, blanco. Grandioso y reflexivo.'
+  },
+  {
+    ep:42, cat:'opinion',
+    title:'Does Your Accent Define You? Real Talk',
+    file:'EP42_Accent_Identity.docx', done:true,
+    thumb:'Boca hablando con ondas sonoras visibles saliendo. Las ondas forman palabras o siluetas de diferentes banderas o culturas. Expresión de orgullo y confianza. Texto: "YOUR ACCENT" en letras grandes y subtexto: "Does it define you?" en itálica. Colores vibrantes y multiculturales. Mensaje visual de que el acento es identidad, no defecto. Empoderador y directo.'
+  },
+  {
+    ep:43, cat:'opinion',
+    title:'Is It Rude to Speak Your Language Around People Who Don\'t Understand?',
+    file:'EP43_Speaking_Your_Language.docx', done:true,
+    thumb:'Grupo de personas en una reunión o mesa: algunos hablando en un idioma mientras uno mira con cara de excluido o confundido. La escena no juzga — simplemente muestra la tensión con honestidad. Bocadillos de idiomas diferentes. Texto: "IS IT RUDE?" en grande. Subtexto: "Speaking your language around others". Colores neutrales con toque de tensión. Reflexivo e inteligente.'
+  },
+  {
+    ep:44, cat:'opinion',
+    title:'Should Everyone Learn English? Honest Opinions',
+    file:'EP44_Should_Everyone_Learn_English.docx', done:true,
+    thumb:'Mapa del mundo con la palabra "ENGLISH?" superpuesta, con signos de interrogación en varios continentes. Fondo que mezcla el poder del inglés global con la riqueza de otros idiomas. Colores de diferentes banderas mezclados. Texto: "SHOULD EVERYONE LEARN ENGLISH?" en letras que reflejan la complejidad de la pregunta. Subtexto: "Honest opinions." Sin respuesta fácil — eso se refleja visualmente.'
+  },
+  {
+    ep:45, cat:'opinion',
+    title:'Is It Harder to Make Real Friends as an Adult?',
+    file:'EP45_Adult_Friendships.docx', done:true,
+    thumb:'Dos personas adultas (no niños) intentando conectar en un contexto cotidiano — café, parque, trabajo. La dificultad está sugerida por cierta distancia o vacilación visible. Fondo cálido pero melancólico. Texto: "MAKING FRIENDS AS AN ADULT" con las palabras "AS AN ADULT" destacadas en otro color. Subtexto: "Is it harder?" Colores: terracota, gris cálido, verde sage. Honesto y universal.'
+  },
+  {
+    ep:46, cat:'opinion',
+    title:'Would You Move to the US? Honest Pros and Cons',
+    file:'EP46_Move_To_US.docx', done:true,
+    thumb:'Maleta lista para viajar frente a un skyline americano icónico (New York, Chicago). A la izquierda: elementos positivos (oportunidad, dólar, libertad). A la derecha: elementos de duda (salud, soledad, costo). Balanza visual en el centro. Texto: "WOULD YOU MOVE TO THE US?" en grande. Subtexto: "Honest pros & cons." Colores de bandera americana con matices de realidad.'
+  },
+  {
+    ep:47, cat:'opinion',
+    title:'Do You Need a College Degree Anymore? Real Talk',
+    file:'EP47_College_Degree.docx', done:true,
+    thumb:'Diploma universitario con un signo de interrogación grande encima. A un lado: laptop con código y certificado online. La pregunta visual es obvia: ¿esto o esto? Fondo que mezcla el campus clásico americano con el mundo digital moderno. Texto: "DO YOU STILL NEED A DEGREE?" en letras que mezclan serif clásico y sans moderno. Subtexto: "Real talk." Colores: azul académico vs. naranja tech.'
+  },
+  {
+    ep:48, cat:'opinion',
+    title:'Is It Okay to Use AI to Help You Write in English?',
+    file:'EP48_AI_Writing.docx', done:true,
+    thumb:'Mano humana escribiendo y mano de IA (representada digitalmente) escribiendo lado a lado en el mismo teclado o papel. La imagen no juzga — muestra la colaboración y la pregunta. Texto: "AI + YOUR ENGLISH" en letras que mezclan escritura a mano y fuente digital. Subtexto: "Is it okay?" Colores: azul IA vs. tinta negra humana. Fondo blanco limpio. Inteligente y actual.'
+  },
+  {
+    ep:49, cat:'opinion',
+    title:'Has Social Media Made Us Better or Worse at English?',
+    file:'EP49_Social_Media_English.docx', done:true,
+    thumb:'Pantalla de teléfono partida por la mitad: lado izquierdo muestra vocabulario nuevo, slang, expresiones reales aprendidas por redes — colorido y dinámico. Lado derecho muestra texto sin puntuación, abreviaturas, degradación de la escritura formal — más oscuro. Texto: "BETTER or WORSE at English?" con cada palabra en el color correspondiente al lado. Subtexto: "Social media\'s real impact." Visualmente dividido y poderoso.'
+  },
+];
+
+// Load saved state
+const saved = JSON.parse(localStorage.getItem('rep_tracker_v3') || '{}');
+EPISODES.forEach(e => { if(saved[e.ep] !== undefined) e.done = saved[e.ep]; });
+
+let currentFilter = 'all';
+const openThumbs = new Set();
+
+function save() {
+  const obj = {};
+  EPISODES.forEach(e => obj[e.ep] = e.done);
+  localStorage.setItem('rep_tracker_v3', JSON.stringify(obj));
+}
+
+function toggleDone(ep, event) {
+  event.stopPropagation();
+  const e = EPISODES.find(x => x.ep === ep);
+  if(e){ e.done = !e.done; save(); renderAll(); }
+}
+
+function toggleThumb(ep) {
+  if(openThumbs.has(ep)) openThumbs.delete(ep);
+  else openThumbs.add(ep);
+  renderEpisodes();
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEpisodes();
+}
+
+function renderSummary() {
+  const grid = document.getElementById('summary-grid');
+  grid.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const eps = EPISODES.filter(e => e.cat === cat.id);
+    const done = eps.filter(e => e.done).length;
+    const pct = Math.round(done/eps.length*100);
+    grid.innerHTML += `
+      <div class="summary-card">
+        <div class="cat-header">
+          <span>${cat.emoji}</span>
+          <span>${cat.name}</span>
+        </div>
+        <div class="cat-bar"><div class="cat-fill" style="width:${pct}%;background:${cat.color}"></div></div>
+        <div class="cat-count">${done} / ${eps.length} episodios · ${pct}%</div>
+      </div>`;
+  });
+}
+
+function renderStats() {
+  const done = EPISODES.filter(e => e.done).length;
+  const total = EPISODES.length;
+  const pct = Math.round(done/total*100);
+  document.getElementById('stat-done').textContent = done;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('pct').textContent = pct + '%';
+  document.getElementById('bar').style.width = pct + '%';
+}
+
+function renderEpisodes() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const container = document.getElementById('episodes-container');
+  container.innerHTML = '';
+
+  CATEGORIES.forEach(cat => {
+    let eps = EPISODES.filter(e => e.cat === cat.id);
+    if(currentFilter === 'done') eps = eps.filter(e => e.done);
+    if(currentFilter === 'pending') eps = eps.filter(e => !e.done);
+    if(q) eps = eps.filter(e => e.title.toLowerCase().includes(q) || String(e.ep).includes(q) || e.thumb.toLowerCase().includes(q));
+    if(!eps.length) return;
+
+    const done = EPISODES.filter(e => e.cat === cat.id && e.done).length;
+    const total = EPISODES.filter(e => e.cat === cat.id).length;
+
+    let html = `<div class="section">
+      <div class="section-title">
+        <span>${cat.emoji}</span> ${cat.name}
+        <span class="badge">✅ ${done}/${total}</span>
+      </div>`;
+
+    eps.forEach(e => {
+      const isOpen = openThumbs.has(e.ep);
+      html += `
+        <div class="ep-card ${e.done?'done':'pending'}">
+          <div class="ep-main">
+            <div class="ep-num">EP${String(e.ep).padStart(2,'0')}</div>
+            <div class="ep-status">${e.done ? '✅' : '⏳'}</div>
+            <div class="ep-title">${e.title}</div>
+            <div class="ep-file">${e.file}</div>
+            <button class="thumb-toggle ${isOpen?'open':''}" onclick="toggleThumb(${e.ep})">
+              🎨 ${isOpen ? 'Ocultar' : 'Portada'}
+            </button>
+            <button class="toggle-done" onclick="toggleDone(${e.ep}, event)">${e.done ? 'Hecho ✓' : 'Marcar'}</button>
+          </div>
+          <div class="thumb-panel ${isOpen?'open':''}">
+            <div class="thumb-label">🎨 Descripción de portada YouTube</div>
+            <div class="thumb-desc">${e.thumb}</div>
+          </div>
+        </div>`;
+    });
+
+    html += '</div>';
+    container.innerHTML += html;
+  });
+}
+
+function renderAll() {
+  renderStats();
+  renderSummary();
+  renderEpisodes();
+}
+
+function exportMD() {
+  const total = EPISODES.length;
+  const done = EPISODES.filter(e => e.done).length;
+  let md = `# The Real English Podcast — Production Tracker\n\n`;
+  md += `**Completados:** ${done} / ${total}\n\n---\n\n`;
+
+  CATEGORIES.forEach(cat => {
+    const eps = EPISODES.filter(e => e.cat === cat.id);
+    const catDone = eps.filter(e => e.done).length;
+    const catObj = CATEGORIES.find(c => c.id === cat.id);
+    md += `## ${catObj.emoji} ${catObj.name} (${catDone}/${eps.length})\n\n`;
+    eps.forEach(e => {
+      md += `### [${e.done ? 'x' : ' '}] EP${String(e.ep).padStart(2,'0')} — ${e.title}\n`;
+      md += `- **Archivo:** \`${e.file}\`\n`;
+      md += `- **Portada YouTube:** ${e.thumb}\n\n`;
+    });
+  });
+
+  const blob = new Blob([md], {type:'text/markdown'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'REP_Production_Tracker_Portadas.md';
+  a.click();
+}
+
+renderAll();
+</script>
+</body>
+</html>
