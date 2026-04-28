@@ -145,10 +145,61 @@
     .main{padding:18px 14px;}
     .thumb-panel{padding-left:18px;}
   }
-</style>
+
+  /* ---- AUTH PANEL ---- */
+  #auth-overlay{display:flex;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);
+    align-items:center;justify-content:center;}
+  #auth-box{background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:36px 40px;width:100%;max-width:380px;}
+  #auth-box h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--accent);
+    margin-bottom:4px;letter-spacing:2px;}
+  #auth-box p.subtitle{font-size:0.72rem;color:var(--muted);margin-bottom:24px;}
+  .auth-tabs{display:flex;gap:8px;margin-bottom:20px;}
+  .auth-tab{flex:1;padding:8px;background:var(--surface);border:1px solid var(--border);
+    color:var(--muted);border-radius:6px;cursor:pointer;font-size:0.8rem;transition:.2s;}
+  .auth-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .auth-field{margin-bottom:14px;}
+  .auth-field label{display:block;font-size:0.72rem;color:var(--muted);margin-bottom:4px;}
+  .auth-field input{width:100%;padding:10px 12px;background:var(--surface);border:1px solid var(--border);
+    border-radius:6px;color:var(--text);font-size:0.85rem;outline:none;box-sizing:border-box;}
+  .auth-field input:focus{border-color:var(--accent);}
+  .auth-submit{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;
+    border-radius:6px;font-size:0.9rem;font-weight:600;cursor:pointer;margin-top:4px;transition:.2s;}
+  .auth-submit:hover{filter:brightness(1.1);}
+  .auth-submit:disabled{opacity:.5;cursor:not-allowed;}
+  #auth-msg{margin-top:10px;font-size:0.78rem;min-height:18px;text-align:center;}
+  #auth-msg.error{color:#ff6b6b;}
+  #auth-msg.success{color:var(--done-b);}
+  /* ---- USER BAR in header ---- */
+  .user-bar{display:flex;align-items:center;gap:10px;font-size:0.75rem;}
+  .user-bar span{color:var(--muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .btn-logout{padding:6px 14px;background:transparent;border:1px solid var(--border);
+    color:var(--muted);border-radius:6px;cursor:pointer;font-size:0.75rem;transition:.2s;}
+  .btn-logout:hover{border-color:var(--accent);color:var(--accent);}</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+<div id="auth-overlay">
+  <div id="auth-box">
+    <h2>THE REAL ENGLISH PODCAST</h2>
+    <p class="subtitle">Production Tracker – Acceso privado</p>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="showTab('login')">Iniciar sesión</button>
+      <button class="auth-tab" id="tab-register" onclick="showTab('register')">Registrarse</button>
+    </div>
+    <div id="form-login">
+      <div class="auth-field"><label>Email</label><input type="email" id="login-email" placeholder="tu@email.com"></div>
+      <div class="auth-field"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+      <button class="auth-submit" id="btn-login" onclick="doLogin()">Entrar</button>
+    </div>
+    <div id="form-register" style="display:none">
+      <div class="auth-field"><label>Email</label><input type="email" id="reg-email" placeholder="tu@email.com"></div>
+      <div class="auth-field"><label>Contraseña (mínimo 6 caracteres)</label><input type="password" id="reg-pass" placeholder="••••••••"></div>
+      <button class="auth-submit" id="btn-register" onclick="doRegister()">Crear cuenta</button>
+    </div>
+    <div id="auth-msg"></div>
+  </div>
+</div>
 
 <header>
   <div class="header-left">
@@ -163,6 +214,11 @@
       <div class="bar"><div class="bar-fill" id="bar" style="width:100%"></div></div>
     </div>
     <button class="export-btn" onclick="exportMD()">⬇ Exportar .md</button>
+  </div>
+
+  <div class="user-bar" id="user-bar" style="display:none">
+    <span id="user-email-display"></span>
+    <button class="btn-logout" onclick="doLogout()">Cerrar sesión</button>
   </div>
 </header>
 
@@ -191,47 +247,114 @@ const SUPABASE_URL = 'https://xvmvbwrdcemeggbkxucz.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2bXZid3JkY2VtZWdnYmt4dWN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTc4NDIsImV4cCI6MjA5MjkzMzg0Mn0.8AyAPYvaEGEQ5X8uPQ08XjArTelUpywxV5rieP2Hlfs'; // << REEMPLAZA con tu anon key de Supabase Settings > API Keys > Legacy > anon public
 const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-async function loadFromSupabase() {
-  try {
-    const { data, error } = await _sb.from('episodios').select('ep_num,is_done,has_thumb').order('id');
-    if (error) throw error;
-    // Apply Supabase states to EPISODES array
-    data.forEach(dbEp => {
-      const ep = EPISODES.find(e => e.ep === dbEp.ep_num);
-      if (ep) {
-        ep.done = dbEp.is_done;
-        if (dbEp.has_thumb) openThumbs.add(ep.ep);
-      }
+// ============================================================
+// AUTH: Supabase Auth functions
+// ============================================================
+let _currentUser = null;
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const btn = document.getElementById('btn-login');
+  if (!email || !pass) { showMsg('Completa todos los campos', 'error'); return; }
+  btn.disabled = true; btn.textContent = 'Entrando...';
+  const { data, error } = await _sb.auth.signInWithPassword({ email, password: pass });
+  if (error) { showMsg(error.message, 'error'); btn.disabled=false; btn.textContent='Entrar'; }
+  else { onAuthSuccess(data.user); }
+}
+
+async function doRegister() {
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  const btn = document.getElementById('btn-register');
+  if (!email || !pass) { showMsg('Completa todos los campos', 'error'); return; }
+  if (pass.length < 6) { showMsg('La contraseña debe tener al menos 6 caracteres', 'error'); return; }
+  btn.disabled = true; btn.textContent = 'Creando cuenta...';
+  const { data, error } = await _sb.auth.signUp({ email, password: pass });
+  if (error) { showMsg(error.message, 'error'); btn.disabled=false; btn.textContent='Crear cuenta'; }
+  else { showMsg('¡Cuenta creada! Revisa tu email para confirmar.', 'success'); btn.disabled=false; btn.textContent='Crear cuenta'; }
+}
+
+async function doLogout() {
+  await _sb.auth.signOut();
+  _currentUser = null;
+  document.getElementById('auth-overlay').style.display = 'flex';
+  document.getElementById('user-bar').style.display = 'none';
+  document.getElementById('user-email-display').textContent = '';
+  EPISODES.forEach(ep => { ep.done = false; });
+  openThumbs.clear();
+  renderAll();
+}
+
+function showMsg(text, type) {
+  const el = document.getElementById('auth-msg');
+  el.textContent = text;
+  el.className = type || '';
+}
+
+function showTab(tab) {
+  document.getElementById('form-login').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('form-register').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  document.getElementById('auth-msg').textContent = '';
+}
+
+function onAuthSuccess(user) {
+  _currentUser = user;
+  document.getElementById('auth-overlay').style.display = 'none';
+  document.getElementById('user-bar').style.display = 'flex';
+  document.getElementById('user-email-display').textContent = user.email;
+  _loadUserProgress();
+}
+
+// ============================================================
+// USER PROGRESS: load/save per user
+// ============================================================
+async function _loadUserProgress() {
+  if (!_currentUser) return;
+  const { data, error } = await _sb
+    .from('user_progress')
+    .select('ep_num, is_done, has_thumb')
+    .eq('user_id', _currentUser.id);
+  if (error) { console.error('Error cargando progreso:', error); renderAll(); return; }
+  if (data && data.length > 0) {
+    EPISODES.forEach(ep => { ep.done = false; });
+    openThumbs.clear();
+    data.forEach(row => {
+      const ep = EPISODES.find(e => e.ep === row.ep_num);
+      if (ep) ep.done = row.is_done;
+      if (row.has_thumb) openThumbs.add(row.ep_num);
     });
-  } catch(err) {
-    console.warn('Supabase load failed:', err.message);
-    // Continue without remote state - use hardcoded defaults
   }
+  renderAll();
 }
 
-async function _saveDone(epNum, val) {
-  try {
-    await _sb.from('episodios').update({is_done: val, updated_at: new Date().toISOString()}).eq('ep_num', epNum);
-  } catch(err) { console.warn('Supabase update failed:', err.message); }
+async function _upsertProgress(epNum, isDone, isThumb) {
+  if (!_currentUser) return;
+  await _sb.from('user_progress').upsert(
+    { user_id: _currentUser.id, ep_num: epNum, is_done: isDone, has_thumb: isThumb, updated_at: new Date().toISOString() },
+    { onConflict: 'user_id,ep_num' }
+  );
 }
 
-async function _saveThumb(epNum, val) {
-  try {
-    await _sb.from('episodios').update({has_thumb: val, updated_at: new Date().toISOString()}).eq('ep_num', epNum);
-  } catch(err) { console.warn('Supabase update failed:', err.message); }
-}
-// =========================================
+const _origToggleDone = toggleDone;
+toggleDone = async function(ep, event) {
+  _origToggleDone(ep, event);
+  if (!_currentUser) return;
+  const epObj = EPISODES.find(e => e.ep === ep);
+  if (epObj) await _upsertProgress(ep, epObj.done, openThumbs.has(ep));
+};
 
+const _origToggleThumb = toggleThumb;
+toggleThumb = async function(ep) {
+  _origToggleThumb(ep);
+  if (!_currentUser) return;
+  const epObj = EPISODES.find(e => e.ep === ep);
+  if (epObj) await _upsertProgress(ep, epObj.done, openThumbs.has(ep));
+};
 
-const CATEGORIES = [
-  { id:'emergencia', emoji:'😱', name:'Emergencia o Tensión',          color:'#e74c3c' },
-  { id:'cultura',    emoji:'🌍', name:'Cultura Americana',              color:'#e67e22' },
-  { id:'dinero',     emoji:'💰', name:'Dinero, Trabajo y Vida Real',    color:'#f1c40f' },
-  { id:'relaciones', emoji:'❤️', name:'Relaciones, Amistad y Social',   color:'#e91e8c' },
-  { id:'viajes',     emoji:'✈️', name:'Viajes y Aventuras',             color:'#3498db' },
-  { id:'opinion',    emoji:'🔥', name:'Temas que Generan Opinión',      color:'#9b59b6' },
-];
-
+// ============================================================
 const EPISODES = [
   {
     ep:1, cat:'emergencia',
@@ -688,8 +811,18 @@ toggleThumb = async function(ep) {
 
 // Inicialización async con Supabase
 async function _init() {
-  await loadFromSupabase();
   renderAll();
+  const { data: { session } } = await _sb.auth.getSession();
+  if (session && session.user) {
+    onAuthSuccess(session.user);
+  }
+  _sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      onAuthSuccess(session.user);
+    } else if (event === 'SIGNED_OUT') {
+      _currentUser = null;
+    }
+  });
 }
 _init();
 </script>
