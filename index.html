@@ -158,7 +158,7 @@
   .ep-card.none-done{border-left-color:var(--pending-b);}
   .ep-card.partial{border-left-color:var(--partial-b);}
 
-  .ep-main{display:flex;align-items:center;gap:10px;padding:11px 14px;}
+  .ep-main{display:flex;align-items:center;gap:10px;padding:11px 14px;flex-wrap:wrap;}
   .ep-num{
     font-family:'Black Han Sans',sans-serif;font-size:.93rem;min-width:46px;text-align:center;
     background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
@@ -281,15 +281,123 @@
   }
   footer span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 
-  @media(max-width:700px){
+  /* ===== RESPONSIVE TABLET ===== */
+  @media(max-width:900px){
+    .stats{gap:12px;}
+    .bar-wrap{width:120px;}
+    header{gap:8px;}
+  }
+
+  /* ===== RESPONSIVE MOBILE ===== */
+  @media(max-width:600px){
+
+    /* Header — stack logo + title, ocultar stats complejos */
+    header{
+      padding:10px 14px;gap:8px;
+      flex-direction:column;align-items:flex-start;
+    }
+    .header-left{width:100%;}
+    .header-logo-img{width:38px;height:38px;}
+    .header-title h1{font-size:1rem;letter-spacing:1px;}
+    .header-title p{font-size:0.55rem;letter-spacing:1px;}
+
+    /* Stats — fila compacta */
+    .stats{
+      width:100%;justify-content:space-between;gap:8px;flex-wrap:nowrap;
+    }
+    .stat .n{font-size:1.4rem;}
+    .stat .l{font-size:0.55rem;}
+    .bar-wrap{width:90px;}
+    .bar-top{font-size:0.58rem;}
+    .export-btn{padding:7px 12px;font-size:0.72rem;}
+
+    /* User bar */
+    .user-bar{width:100%;justify-content:space-between;}
+    .user-bar span{max-width:200px;}
+
+    /* Main content */
+    .main{padding:14px 10px;}
+
+    /* Hero band — stack vertical */
+    .hero-band{
+      flex-direction:column;align-items:flex-start;
+      padding:14px 16px;gap:10px;
+    }
+    .hero-text h2{font-size:0.95rem;}
+    .hero-text p{font-size:0.7rem;}
+    .hero-tag{font-size:0.68rem;padding:5px 12px;}
+
+    /* Summary grid — 1 columna */
+    .summary-grid{grid-template-columns:1fr;}
+
+    /* Legend */
+    .legend{gap:8px;}
+    .legend-item{font-size:0.64rem;}
+
+    /* Filter bar — wrap limpio */
+    .filter-bar{gap:6px;}
+    .filter-btn{padding:6px 12px;font-size:0.72rem;}
+    .search-box{width:100%;font-size:0.78rem;}
+
+    /* Episode card — layout vertical en móvil */
+    .ep-main{
+      flex-wrap:wrap;padding:10px 10px 8px;gap:8px;
+    }
+    .ep-num{min-width:38px;font-size:0.85rem;}
+    .ep-progress{font-size:0.62rem;padding:2px 6px;}
+    .ep-title{
+      flex:none;width:calc(100% - 46px - 40px - 20px);
+      font-size:0.82rem;order:0;
+    }
     .ep-file{display:none;}
-    .ep-checks{gap:3px;}
-    .check-btn{font-size:0.62rem;padding:3px 7px;}
-    header{padding:12px 14px;}
-    .main{padding:16px 12px;}
-    .panel-row{flex-direction:column;}
-    .hero-band{padding:14px 18px;}
-    #auth-box{padding:28px 22px;}
+
+    /* Checks — fila completa debajo del título */
+    .ep-checks{
+      width:100%;justify-content:flex-start;gap:4px;
+      order:10;flex-wrap:wrap;
+    }
+    .check-btn{
+      font-size:0.65rem;padding:4px 8px;gap:3px;
+      flex:1;justify-content:center;min-width:0;
+    }
+
+    /* Panel toggle — full width */
+    .panel-toggle{
+      width:100%;justify-content:center;
+      font-size:0.68rem;padding:5px 10px;order:11;
+    }
+
+    /* Expanded panel */
+    .ep-panel{padding:12px 10px 14px;}
+    .panel-row{flex-direction:column;gap:14px;}
+    .panel-col{min-width:0;width:100%;}
+    .thumb-desc{font-size:0.78rem;line-height:1.6;}
+    .notes-area{font-size:0.78rem;min-height:60px;}
+
+    /* Section title */
+    .section-title{font-size:0.85rem;letter-spacing:1px;}
+
+    /* Auth box */
+    #auth-box{
+      padding:24px 18px;
+      margin:12px;
+      max-width:calc(100vw - 24px);
+      border-radius:14px;
+    }
+    .auth-logo-img{width:100px;height:100px;}
+    #auth-box h2{font-size:1.2rem;}
+    #auth-box p.subtitle{font-size:0.67rem;}
+    .auth-tab{font-size:0.74rem;padding:8px 6px;}
+    .auth-field input{font-size:0.82rem;padding:10px 12px;}
+    .auth-submit{font-size:0.85rem;padding:12px;}
+  }
+
+  /* ===== EXTRA SMALL (320px) ===== */
+  @media(max-width:380px){
+    .check-btn{font-size:0.6rem;padding:3px 5px;}
+    .header-title h1{font-size:0.88rem;}
+    .export-btn span{display:none;}
+    .stat .n{font-size:1.2rem;}
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
